@@ -4,6 +4,7 @@ import Button from 'react-native-button';
 import Spinner from './spinner';
 import { GlobalStyles } from '../src/styles';
 import {login} from '../src/brs'
+import {getContactDetails} from '../src/utils'
 import axios from 'axios'
 
 class Login extends Component {
@@ -12,8 +13,20 @@ class Login extends Component {
     this.state = { username: '8-digit BRS code',
                    password: 'BRS Password',
                    error: null,
-                   spinner: false
+                   spinner: false,
+                   nextButtonActive: true
                  };
+  }
+
+  componentWillMount() {
+    console.log('Login componentWillMount');
+    const context = this
+    getContactDetails()
+    .then((contactDetails) => {
+      console.log('contactDetails: ', JSON.stringify(contactDetails));
+      if (contactDetails)
+        context.setState({username: contactDetails.username, password: contactDetails.password})
+    })
   }
 
   _resetUserName(event) {
@@ -98,14 +111,12 @@ class Login extends Component {
             />
           </View>
           <View style={styles.footer}>
-            <View style={{flex: 1}}>
-            </View>
-            <View style={{flex: 1}}>
-              <Button
-                onPress={this._next.bind(this)}>
-                <Text style={styles.next_button}>Next....</Text>
-              </Button>
-            </View>
+            <Button
+              onPress={this._next.bind(this)}>
+              <Text style={[styles.next_button,
+                            this.state.nextButtonActive? styles.buttonActive: styles.buttonInActive
+                          ]}>VERIFY</Text>
+            </Button>
           </View>
           <Text style={styles.error}>{this.state.error != null?this.state.error:' '}</Text>
         </View>
@@ -137,7 +148,7 @@ const styles = StyleSheet.create({
   },
   register_body: {
     color: '#FFF',
-    fontSize: 18,
+    fontSize: 20,
     fontFamily: GlobalStyles.font,
     lineHeight: 24,
     paddingBottom: 5,
@@ -153,37 +164,37 @@ const styles = StyleSheet.create({
     paddingLeft: 30,
     paddingRight: 30
   },
-  confirm_button: {
-    fontSize: 14,
+  next_button: {
     fontFamily: GlobalStyles.font,
+    fontSize: 13,
     borderRadius: 3,
-    paddingTop: 12,
-    paddingBottom: 12,
-    paddingLeft: 50,
-    paddingRight: 50,
+    borderWidth: 0.5,
+    borderColor: GlobalStyles.buttonPrimary,
+    paddingTop: 10,
+    paddingBottom: 10,
+    margin: 5,
+    textAlign: 'center',
+    overflow: 'hidden',
+  },
+  buttonActive: {
     color: 'white',
-    marginTop: 0,
     backgroundColor: GlobalStyles.buttonPrimary,
   },
-  next_button: {
-    fontSize: 20,
-    fontFamily: GlobalStyles.font,
-    borderRadius: 3,
-    paddingTop: 5,
-    paddingBottom: 5,
-    paddingLeft: 10,
-    paddingRight: 10,
-    color: 'white',
-    marginTop: 0,
+  buttonInActive: {
+    color: GlobalStyles.buttonPrimary,
+    backgroundColor: GlobalStyles.buttonInactive
   },
   footer: {
-    flexDirection: 'row',
-    paddingTop: 20,
+    //backgroundColor: GlobalStyles.lightBackground,
+    borderTopColor: GlobalStyles.divider,
+    // justifyContent: 'space-around',
+    // flexDirection: 'row',
+    // alignItems: 'stretch',
+    paddingTop: 10,
     paddingBottom: 10,
-    marginTop: 0,
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
-  }
+    paddingRight: 15,
+    paddingLeft: 15,
+  },
 });
 
 module.exports = Login;

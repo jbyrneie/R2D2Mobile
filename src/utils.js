@@ -81,8 +81,8 @@ exports.getContactDetails = function() {
     });
 };
 
-exports.register = function(contact) {
-  return AsyncStorage.setItem('contactDetails', JSON.stringify(contact))
+exports.saveContactDetails = function(contactDetails) {
+  return AsyncStorage.setItem('contactDetails', JSON.stringify(contactDetails))
     .then(function(response) {
       return
     });

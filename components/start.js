@@ -8,7 +8,7 @@ class Start extends Component {
   waitToInitialize = function() {
     if (this.props.navigator) {
       const context = this
-      clearContactDetails() // JUST for testing, ensures App starts at Login point
+      //clearContactDetails() // JUST for testing, ensures App starts at Login point
       return getContactDetails()
         .then(function(response) {
           const route = response === null?'login':'selectTeeTime'

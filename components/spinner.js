@@ -8,7 +8,7 @@ class AppSpinner extends Component {
       <View style={styles.container}>
         <Spinner
           visible={true}
-          overlayColor={'rgba(0, 0, 0, 0.85)'}
+          overlayColor={'rgba(0, 0, 0, 0.80)'}
           textContent={this.props.message}
           textStyle={styles.spinnerTextStyle}
         />

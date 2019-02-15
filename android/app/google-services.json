@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "396688167477",
+    "firebase_url": "https://glg-client-accept-cm.firebaseio.com",
+    "project_id": "glg-client-accept-cm",
+    "storage_bucket": "glg-client-accept-cm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:396688167477:android:d7873bde4dfa11c0",
+        "android_client_info": {
+          "package_name": "com.R2D2Mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "396688167477-1r7o3rs04k0rig0udl48n2jhtj4p93uf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYsTS77vTrLC5R_Bfj3JdrjVRj4S2eVhY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

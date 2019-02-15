@@ -62,7 +62,7 @@ class Login extends Component {
             Welcome to R2D2
           </Text>
           {this.state.spinner ?
-            <Spinner />
+            <Spinner message='Logging In.....'/>
           :
           null
           }

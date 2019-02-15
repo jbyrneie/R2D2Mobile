@@ -8,7 +8,8 @@ class AppSpinner extends Component {
       <View style={styles.container}>
         <Spinner
           visible={true}
-          textContent={'Loading...'}
+          overlayColor={'rgba(0, 0, 0, 0.85)'}
+          textContent={this.props.message}
           textStyle={styles.spinnerTextStyle}
         />
       </View>
@@ -25,16 +26,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF'
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5
   }
 });
 

@@ -103,8 +103,14 @@ class SelectTeeTime extends Component {
     return(players)
   }
 
-  _menuAction(action) {
-      console.log('_menuAction: ', action);
+  _menuLogout() {
+    console.log('_menuLogout');
+    this._menu.hide();
+  }
+
+  _menuPlayers() {
+    console.log('_menuPlayers');
+    this._menu.hide();
   }
 
   render() {
@@ -135,15 +141,14 @@ class SelectTeeTime extends Component {
                 </Text>
               </View>
               <View style={{flex:.25, alignItems: 'center', justifyContent: 'center'}}>
-                <Picker
-                  style={{height: 30, width: 50, color:'#747474'}}
-                  itemStyle={styles.itemStyle}
-                  prompt='Options'
-                  onValueChange={(itemValue, itemIndex) => this._menuAction(itemValue)}
+                <Menu
+                  ref={this.setMenuRef}
+                  button={<Text onPress={this.showMenu} style={{color: 'white'}}>Show menu</Text>}
                 >
-                  <Picker.Item label="Players" value="players" />
-                  <Picker.Item label="Logout" value="logout" />
-                </Picker>
+                  <MenuItem onPress={this._menuPlayers.bind(this)}>Players</MenuItem>
+                  <MenuDivider />
+                  <MenuItem onPress={this._menuLogout.bind(this)}>Logout</MenuItem>
+                </Menu>
             </View>
             </View>
           </View>

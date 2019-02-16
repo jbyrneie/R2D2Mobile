@@ -11,6 +11,7 @@ import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 import DatePicker from 'react-native-datepicker'
 import {getContactDetails, getTeeTimeDetails, getCookie, get_key_value} from '../src/utils'
 import {login} from '../src/brs'
+import AppBar from './appBar'
 import axios from 'axios'
 
 class ScheduleTeeTime extends Component {
@@ -163,12 +164,7 @@ class ScheduleTeeTime extends Component {
           >
         <StatusBar barStyle = "light-content" hidden = {false}/>
         <View style={styles.container}>
-          <View style={styles.header}>
-            <Text style={styles.page_title} onPress={this._goBack.bind(this)}>
-              {Platform.OS === 'ios'?<Icon name='chevron-left' style={styles.ios_icon}/>:null}
-              {bannerText}
-            </Text>
-          </View>
+          <AppBar bannerText={bannerText} navigator={this.props.navigator} url={this.props.url}/>
           <View style={styles.body}>
             <Text style={styles.heading}>
               Countdown to Tee Time Booking

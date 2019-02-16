@@ -2,8 +2,12 @@ import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 import { GlobalStyles } from '../src/styles';
+import {getContactDetails, saveContactDetails} from '../src/utils'
 
 class AppBar extends Component {
+  constructor(props) {
+    super(props);
+  }
   _menu = null;
 
   setMenuRef = ref => {
@@ -18,10 +22,22 @@ class AppBar extends Component {
     console.log('showMenu....');
     this._menu.show();
   };
-  
-  _menuLogout() {
+
+  _menuLogout(navigator, url) {
     console.log('_menuLogout');
-    this._menu.hide();
+    const context = this
+    return getContactDetails()
+      .then(function(response) {
+        response.verified = false
+        return response
+      })
+      .then((response) => {
+        return saveContactDetails(response)
+          .then(function(response) {
+            context._menu.hide();
+            navigator.push({name: 'login', url: url});
+          })
+      });
   }
 
   _menuPlayers() {
@@ -46,7 +62,7 @@ class AppBar extends Component {
             >
               <MenuItem onPress={this._menuPlayers.bind(this)}>Players</MenuItem>
               <MenuDivider />
-              <MenuItem onPress={this._menuLogout.bind(this)}>Logout</MenuItem>
+              <MenuItem onPress={this._menuLogout.bind(this, this.props.navigator, this.props.url)}>Logout</MenuItem>
             </Menu>
           </View>
         </View>

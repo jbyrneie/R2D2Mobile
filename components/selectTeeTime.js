@@ -108,7 +108,7 @@ class SelectTeeTime extends Component {
           >
         <StatusBar barStyle = "light-content" hidden = {false}/>
         <View style={styles.container}>
-          <AppBar bannerText={bannerText} />
+          <AppBar bannerText={bannerText} navigator={this.props.navigator} url={this.props.url}/>
           <View style={styles.body}>
             <Text style={styles.heading}>
               Tee Time becomes available on

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text,View, ScrollView, StyleSheet, TouchableHighlight, Image, StatusBar, BackHandler, Platform, Picker} from 'react-native';
+import { Text,View, ScrollView, StyleSheet, TouchableHighlight, Image, StatusBar, BackHandler, Platform, Picker, Alert, YellowBox} from 'react-native';
 import Button from 'react-native-button';
 import CountDown from 'react-native-countdown-component';
 import { GlobalStyles } from '../src/styles';
@@ -10,6 +10,9 @@ import Icon from 'react-native-fa-icons';
 import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 import DatePicker from 'react-native-datepicker'
 import {saveTeeTimeDetails} from '../src/utils'
+import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
+//import { Button } from 'react-native-elements';
+//import Icon from 'react-native-vector-icons/FontAwesome';
 
 class SelectTeeTime extends Component {
   constructor(props) {
@@ -29,6 +32,21 @@ class SelectTeeTime extends Component {
       player4: -1
     };
   }
+
+  _menu = null;
+
+  setMenuRef = ref => {
+    this._menu = ref;
+  };
+
+  hideMenu = () => {
+    this._menu.hide();
+  };
+
+  showMenu = () => {
+    console.log('showMenu....');
+    this._menu.show();
+  };
 
   _schedule(event) {
     const context = this
@@ -85,6 +103,10 @@ class SelectTeeTime extends Component {
     return(players)
   }
 
+  _menuAction(action) {
+      console.log('_menuAction: ', action);
+  }
+
   render() {
     const config = {
       velocityThreshold: 0.2,
@@ -105,10 +127,25 @@ class SelectTeeTime extends Component {
         <StatusBar barStyle = "light-content" hidden = {false}/>
         <View style={styles.container}>
           <View style={styles.header}>
-            <Text style={styles.page_title} onPress={this._goBack.bind(this)}>
-              {Platform.OS === 'ios'?<Icon name='chevron-left' style={styles.ios_icon}/>:null}
-              {bannerText}
-            </Text>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <View style={{flex:.75}}>
+                <Text style={styles.page_title}>
+                  {Platform.OS === 'ios'?<Icon name='chevron-left' style={styles.ios_icon}/>:null}
+                  {bannerText}
+                </Text>
+              </View>
+              <View style={{flex:.25, alignItems: 'center', justifyContent: 'center'}}>
+                <Picker
+                  style={{height: 30, width: 50, color:'#747474'}}
+                  itemStyle={styles.itemStyle}
+                  prompt='Options'
+                  onValueChange={(itemValue, itemIndex) => this._menuAction(itemValue)}
+                >
+                  <Picker.Item label="Players" value="players" />
+                  <Picker.Item label="Logout" value="logout" />
+                </Picker>
+            </View>
+            </View>
           </View>
           <View style={styles.body}>
             <Text style={styles.heading}>
@@ -414,7 +451,6 @@ const styles = StyleSheet.create({
   itemStyle: {
     fontFamily: GlobalStyles.font
   }
-
 });
 
 module.exports = SelectTeeTime;

@@ -11,7 +11,7 @@ class Start extends Component {
       //clearContactDetails() // JUST for testing, ensures App starts at Login point
       return getContactDetails()
         .then(function(response) {
-          const route = response === null?'login':'selectTeeTime'
+          const route = response && response.verified?'selectTeeTime':'login'
           context.props.navigator.push({name: route, url: context.props.url});
         });
     }

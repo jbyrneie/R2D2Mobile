@@ -4,7 +4,7 @@ import Button from 'react-native-button';
 import Spinner from './spinner';
 import { GlobalStyles } from '../src/styles';
 import {login} from '../src/brs'
-import {getContactDetails} from '../src/utils'
+import {getContactDetails, saveContactDetails} from '../src/utils'
 import axios from 'axios'
 
 class Login extends Component {
@@ -49,6 +49,13 @@ class Login extends Component {
     .then((response) => {
       console.log('Login response: ', JSON.stringify(response));
       context.setState({spinner: false})
+      return saveContactDetails({username: this.state.username, password: this.state.password, verified: response.status == 9?true:false})
+      .then(() => {
+        return response
+      })
+      return response
+    })
+    .then((response) => {
       if (response.status == 9)
         context.props.navigator.push({name: 'selectTeeTime', url: context.props.url});
       else throw new Error('Failed to login.....')

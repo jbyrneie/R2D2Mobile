@@ -11,6 +11,7 @@ import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 import DatePicker from 'react-native-datepicker'
 import {saveTeeTimeDetails} from '../src/utils'
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
+import AppBar from './appBar'
 //import { Button } from 'react-native-elements';
 //import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -32,21 +33,6 @@ class SelectTeeTime extends Component {
       player4: -1
     };
   }
-
-  _menu = null;
-
-  setMenuRef = ref => {
-    this._menu = ref;
-  };
-
-  hideMenu = () => {
-    this._menu.hide();
-  };
-
-  showMenu = () => {
-    console.log('showMenu....');
-    this._menu.show();
-  };
 
   _schedule(event) {
     const context = this
@@ -103,16 +89,6 @@ class SelectTeeTime extends Component {
     return(players)
   }
 
-  _menuLogout() {
-    console.log('_menuLogout');
-    this._menu.hide();
-  }
-
-  _menuPlayers() {
-    console.log('_menuPlayers');
-    this._menu.hide();
-  }
-
   render() {
     const config = {
       velocityThreshold: 0.2,
@@ -132,26 +108,7 @@ class SelectTeeTime extends Component {
           >
         <StatusBar barStyle = "light-content" hidden = {false}/>
         <View style={styles.container}>
-          <View style={styles.header}>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <View style={{flex:.75}}>
-                <Text style={styles.page_title}>
-                  {Platform.OS === 'ios'?<Icon name='chevron-left' style={styles.ios_icon}/>:null}
-                  {bannerText}
-                </Text>
-              </View>
-              <View style={{flex:.25, alignItems: 'center', justifyContent: 'center'}}>
-                <Menu
-                  ref={this.setMenuRef}
-                  button={<Text onPress={this.showMenu} style={{color: 'white'}}>Show menu</Text>}
-                >
-                  <MenuItem onPress={this._menuPlayers.bind(this)}>Players</MenuItem>
-                  <MenuDivider />
-                  <MenuItem onPress={this._menuLogout.bind(this)}>Logout</MenuItem>
-                </Menu>
-            </View>
-            </View>
-          </View>
+          <AppBar bannerText={bannerText} />
           <View style={styles.body}>
             <Text style={styles.heading}>
               Tee Time becomes available on

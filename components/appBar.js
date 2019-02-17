@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View, TouchableWithoutFeedback } from 'react-native';
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 import { GlobalStyles } from '../src/styles';
+import Icon from 'react-native-fa-icons';
 import {getContactDetails, saveContactDetails} from '../src/utils'
 
 class AppBar extends Component {
@@ -56,9 +57,14 @@ class AppBar extends Component {
             </Text>
           </View>
           <View style={{flex:.25, alignItems: 'center', justifyContent: 'center'}}>
+            <TouchableWithoutFeedback onPress={this.showMenu}>
+              <View>
+                <Icon name='align-justify' style={styles.ios_icon}/>
+              </View>
+            </TouchableWithoutFeedback>
             <Menu
               ref={this.setMenuRef}
-              button={<Text onPress={this.showMenu} style={styles.page_title}>></Text>}
+              button={<Text></Text>}
             >
               <MenuItem onPress={this._menuPlayers.bind(this)}>Players</MenuItem>
               <MenuDivider />
@@ -88,7 +94,8 @@ const styles = StyleSheet.create({
   ios_icon: {
     fontSize: 18,
     color: '#FFFFFF',
-    marginRight: 50,
+    marginLeft: 40,
+    marginTop: 10
   },
 });
 

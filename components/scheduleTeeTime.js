@@ -175,7 +175,7 @@ class ScheduleTeeTime extends Component {
               onPress={() => alert('hello')}
               size={20}
             />
-          <View style={{marginTop:50}}>
+            <View style={{marginTop:50}}>
               {
                 this.state.activity.map((a, i) => {
                   return(

@@ -252,14 +252,14 @@ class SelectTeeTime extends Component {
                 </Picker>
               </View>
             </View>
-            <View style={styles.footer}>
-              <Button
-                onPress={this._schedule.bind(this)}>
-                <Text style={[styles.schedule_button,
-                              this.state.scheduleButtonActive? styles.buttonActive: styles.buttonInActive
-                            ]}>SCHEDULE TEE TIME</Text>
-              </Button>
-            </View>
+          </View>
+          <View style={styles.footer}>
+            <Button
+              onPress={this._schedule.bind(this)}>
+              <Text style={[styles.schedule_button,
+                            this.state.scheduleButtonActive? styles.buttonActive: styles.buttonInActive
+                          ]}>SCHEDULE TEE TIME</Text>
+            </Button>
           </View>
         </View>
       </GestureRecognizer>

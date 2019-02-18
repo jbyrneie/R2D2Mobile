@@ -5,13 +5,13 @@ import Spinner from './spinner';
 import { GlobalStyles } from '../src/styles';
 import {login} from '../src/brs'
 import {getContactDetails, saveContactDetails} from '../src/utils'
-import axios from 'axios'
 
 class Login extends Component {
   constructor(props) {
     super(props);
     this.state = { username: '8-digit BRS code',
-                   password: 'BRS Password',
+                   password: '',
+                   club: 'Club Name',
                    error: null,
                    spinner: false,
                    nextButtonActive: true
@@ -25,7 +25,7 @@ class Login extends Component {
     .then((contactDetails) => {
       console.log('contactDetails: ', JSON.stringify(contactDetails));
       if (contactDetails)
-        context.setState({username: contactDetails.username, password: contactDetails.password})
+        context.setState({username: contactDetails.username, password: contactDetails.password, club: contactDetails.club})
     })
   }
 
@@ -39,17 +39,22 @@ class Login extends Component {
       this.setState({password: ''})
   }
 
+  _resetClub(event) {
+    if (this.state.club === 'Club Name')
+      this.setState({club: ''})
+  }
+
   _next(event) {
     console.log(`_next username: ${this.state.username} password: ${this.state.password}`)
     let activity = []
     const context = this
 
     this.setState({spinner: true})
-    login({username: this.state.username, password: this.state.password}, activity)
+    login({username: this.state.username.trim(), password: this.state.password.trim(), club: this.state.club.trim().toLowerCase()}, activity)
     .then((response) => {
       console.log('Login response: ', JSON.stringify(response));
       context.setState({spinner: false})
-      return saveContactDetails({username: this.state.username, password: this.state.password, verified: response.status == 9?true:false})
+      return saveContactDetails({username: this.state.username.trim(), password: this.state.password.trim(), club: this.state.club.trim().toLowerCase(), verified: response.status == 9?true:false})
       .then(() => {
         return response
       })
@@ -117,6 +122,21 @@ class Login extends Component {
               underlineColorAndroid='transparent'
             />
           </View>
+          <View style={styles.input_wrapper}>
+            <TextInput
+              style={{color: '#FFF',
+                      height: 40,
+                      textAlign: 'center',
+                      fontFamily: GlobalStyles.font,
+                      borderBottomWidth: 1,
+                      borderBottomColor: '#696969'
+                    }}
+              onChangeText={(club) => this.setState({club})}
+              onFocus={this._resetClub.bind(this)}
+              value={this.state.club}
+              underlineColorAndroid='transparent'
+            />
+          </View>
           <View style={styles.footer}>
             <Button
               onPress={this._next.bind(this)}>
@@ -151,7 +171,7 @@ const styles = StyleSheet.create({
   input_wrapper: {
     borderBottomColor: '#323b44',
     borderBottomWidth: .75,
-    marginBottom: 40
+    marginBottom: 30
   },
   register_body: {
     color: '#FFF',
@@ -165,9 +185,8 @@ const styles = StyleSheet.create({
   logo_wrap: {
     alignItems: 'center',
     height: 220,
-    paddingTop: 10,
     paddingBottom: 10,
-    marginBottom: 20,
+    marginBottom: 10,
     paddingLeft: 30,
     paddingRight: 30
   },

@@ -9,9 +9,10 @@ import momenttz from 'moment-timezone'
 import Icon from 'react-native-fa-icons';
 import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 import DatePicker from 'react-native-datepicker'
-import {saveTeeTimeDetails} from '../src/utils'
+import {getPlayerDetails, saveTeeTimeDetails} from '../src/utils'
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 import AppBar from './appBar'
+import ConfigPlayers from './configPlayers'
 //import { Button } from 'react-native-elements';
 //import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -30,7 +31,8 @@ class SelectTeeTime extends Component {
       player1: 64,
       player2: -1,
       player3: -1,
-      player4: -1
+      player4: -1,
+      showConfigPlayersModal: false
     };
   }
 
@@ -65,8 +67,19 @@ class SelectTeeTime extends Component {
     }
   }
 
+  _showConfigPlayersModal(showModal) {
+    this.setState({
+      showConfigPlayersModal: showModal
+    })
+  }
+
   componentWillMount() {
-    BackHandler.addEventListener('hardwareBackPress', this._goBack.bind(this));
+    const context = this
+    getPlayerDetails()
+    .then((playerDetails) => {
+      context.setState({playerDetails: playerDetails, showConfigPlayersModal: playerDetails?false:true})
+      BackHandler.addEventListener('hardwareBackPress', context._goBack.bind(this));
+    })
   }
 
   componentWillUnmount() {
@@ -107,161 +120,167 @@ class SelectTeeTime extends Component {
           }}
           >
         <StatusBar barStyle = "light-content" hidden = {false}/>
-        <View style={styles.container}>
-          <AppBar bannerText={bannerText} navigator={this.props.navigator} url={this.props.url}/>
-          <View style={styles.body}>
-            <Text style={styles.heading}>
-              Tee Time becomes available on
-            </Text>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <DatePicker
-                style={{width: 200}}
-                date={this.state.dateAvailable}
-                mode="datetime"
-                placeholder="select date"
-                format="YYYY-MM-DD HH:mm"
-                confirmBtnText="Confirm"
-                cancelBtnText="Cancel"
-                customStyles={{
-                  dateIcon: {
-                    position: 'absolute',
-                    left: 0,
-                    top: 4,
-                    marginLeft: 0
-                  },
-                  dateInput: {
-                    marginLeft: 36
-                  }
-                  // ... You can check the source to find the other keys.
-                }}
-                onDateChange={(date) => {this.setState({dateAvailable: date, scheduleButtonActive:true})}}
+          <View style={styles.container}>
+            <AppBar bannerText={bannerText} navigator={this.props.navigator} url={this.props.url}/>
+            <View style={styles.body}>
+              <Text style={styles.heading}>
+                Tee Time becomes available on
+              </Text>
+              <View style={{flexDirection:'row', justifyContent:'flex-start', marginLeft:25}}>
+                <DatePicker
+                  style={{width: 200}}
+                  date={this.state.dateAvailable}
+                  mode="datetime"
+                  placeholder="select date"
+                  format="YYYY-MM-DD HH:mm"
+                  confirmBtnText="Confirm"
+                  cancelBtnText="Cancel"
+                  customStyles={{
+                    dateIcon: {
+                      position: 'absolute',
+                      left: 0,
+                      top: 4,
+                      marginLeft: 0
+                    },
+                    dateInput: {
+                      marginLeft: 36
+                    }
+                  }}
+                  onDateChange={(date) => {this.setState({dateAvailable: date, scheduleButtonActive:true})}}
+                />
+              </View>
+              <Text style={styles.heading}>
+                Tee Time required
+              </Text>
+              <View style={{flexDirection:'row', justifyContent:'flex-start', marginLeft:25}}>
+                <DatePicker
+                  style={{width: 200}}
+                  date={this.state.teeTime}
+                  mode="datetime"
+                  placeholder="select date"
+                  format="YYYY-MM-DD HH:mm"
+                  confirmBtnText="Confirm"
+                  cancelBtnText="Cancel"
+                  customStyles={{
+                    dateIcon: {
+                      position: 'absolute',
+                      left: 0,
+                      top: 4,
+                      marginLeft: 0
+                    },
+                    dateInput: {
+                      marginLeft: 36
+                    }
+                    // ... You can check the source to find the other keys.
+                  }}
+                  onDateChange={(date) => {this.setState({teeTime: date, scheduleButtonActive:true})}}
+                />
+              </View>
+              <Text style={styles.heading}>
+                Select Players
+              </Text>
+              <View style={{flexDirection:'row', justifyContent:'flex-start', marginLeft:25}}>
+                <View style={{flex:.25}}>
+                  <Text style={{paddingTop: 5}}>Player1</Text>
+                </View>
+                <View style={{flex:.30}}>
+                  <Picker
+                    selectedValue={this.state.player1}
+                    style={{height: 30, width: 100}}
+                    itemStyle={styles.itemStyle}
+                    prompt='Select Player1'
+                    onValueChange={(itemValue, itemIndex) => this.setState({player1: itemValue})}
+                  >
+                    <Picker.Item label="Jack" value="64" />
+                  </Picker>
+                </View>
+              </View>
+              <View style={{flexDirection:'row', justifyContent:'flex-start', marginLeft:25}}>
+                <View style={{flex:.25}}>
+                  <Text style={{paddingTop: 5}}>Player2</Text>
+                </View>
+                <View style={{flex:.3}}>
+                  <Picker
+                    selectedValue={this.state.player2}
+                    style={{height: 30, width: 100}}
+                    itemStyle={styles.itemStyle}
+                    prompt='Select Player2'
+                    onValueChange={(itemValue, itemIndex) => this.setState({player2: itemValue})}
+                  >
+                    <Picker.Item label="None" value="-1" />
+                    {
+                      this._availablePlayers().map((p, i) => {
+                        return(
+                            <Picker.Item key={i} label={p.label} value={p.value} />
+                        )
+                      })
+                    }
+                  </Picker>
+                </View>
+              </View>
+              <View style={{flexDirection:'row', justifyContent:'flex-start', marginLeft:25}}>
+                <View style={{flex:.25}}>
+                  <Text style={{paddingTop: 5}}>Player3</Text>
+                </View>
+                <View style={{flex:.3}}>
+                  <Picker
+                    selectedValue={this.state.player3}
+                    style={{height: 30, width: 100}}
+                    itemStyle={styles.itemStyle}
+                    prompt='Select Player3'
+                    onValueChange={(itemValue, itemIndex) => this.setState({player3: itemValue})}
+                  >
+                    <Picker.Item label="None" value="-1" />
+                    {
+                      this._availablePlayers().map((p, i) => {
+                        return(
+                            <Picker.Item key={i} label={p.label} value={p.value} />
+                        )
+                      })
+                    }
+                  </Picker>
+                </View>
+              </View>
+              <View style={{flexDirection:'row', justifyContent:'flex-start', marginLeft:25}}>
+                <View style={{flex:.25}}>
+                  <Text style={{paddingTop: 5}}>Player4</Text>
+                </View>
+                <View style={{flex:.3}}>
+                  <Picker
+                    selectedValue={this.state.player4}
+                    style={{height: 30, width: 100}}
+                    itemStyle={styles.itemStyle}
+                    prompt='Select Player4'
+                    onValueChange={(itemValue, itemIndex) => this.setState({player4: itemValue})}
+                  >
+                    <Picker.Item label="None" value="-1" />
+                    {
+                      this._availablePlayers().map((p, i) => {
+                        return(
+                            <Picker.Item key={i} label={p.label} value={p.value} />
+                        )
+                      })
+                    }
+                  </Picker>
+                </View>
+              </View>
+            </View>
+            <View style={styles.footer}>
+              <Button
+                onPress={this._schedule.bind(this)}>
+                <Text style={[styles.schedule_button,
+                              this.state.scheduleButtonActive? styles.buttonActive: styles.buttonInActive
+                            ]}>SCHEDULE TEE TIME</Text>
+              </Button>
+            </View>
+            <View>
+              <ConfigPlayers
+                visible={this.state.showConfigPlayersModal}
+                showModal={this._showConfigPlayersModal.bind(this)}
+                navigator={this.props.navigator}
               />
             </View>
-            <Text style={styles.heading}>
-              Tee Time required
-            </Text>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <DatePicker
-                style={{width: 200}}
-                date={this.state.teeTime}
-                mode="datetime"
-                placeholder="select date"
-                format="YYYY-MM-DD HH:mm"
-                confirmBtnText="Confirm"
-                cancelBtnText="Cancel"
-                customStyles={{
-                  dateIcon: {
-                    position: 'absolute',
-                    left: 0,
-                    top: 4,
-                    marginLeft: 0
-                  },
-                  dateInput: {
-                    marginLeft: 36
-                  }
-                  // ... You can check the source to find the other keys.
-                }}
-                onDateChange={(date) => {this.setState({teeTime: date, scheduleButtonActive:true})}}
-              />
-            </View>
-            <Text style={styles.heading}>
-              Select Players
-            </Text>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <View style={{flex:.25}}>
-                <Text style={{paddingTop: 5}}>Player1</Text>
-              </View>
-              <View style={{flex:.30}}>
-                <Picker
-                  selectedValue={this.state.player1}
-                  style={{height: 30, width: 100}}
-                  itemStyle={styles.itemStyle}
-                  prompt='Select Player1'
-                  onValueChange={(itemValue, itemIndex) => this.setState({player1: itemValue})}
-                >
-                  <Picker.Item label="Jack" value="64" />
-                </Picker>
-              </View>
-            </View>
-            <View style={{flexDirection: 'row'}}>
-              <View style={{flex:.25}}>
-                <Text style={{paddingTop: 5}}>Player2</Text>
-              </View>
-              <View style={{flex:.3}}>
-                <Picker
-                  selectedValue={this.state.player2}
-                  style={{height: 30, width: 100}}
-                  itemStyle={styles.itemStyle}
-                  prompt='Select Player2'
-                  onValueChange={(itemValue, itemIndex) => this.setState({player2: itemValue})}
-                >
-                  <Picker.Item label="None" value="-1" />
-                  {
-                    this._availablePlayers().map((p, i) => {
-                      return(
-                          <Picker.Item key={i} label={p.label} value={p.value} />
-                      )
-                    })
-                  }
-                </Picker>
-              </View>
-            </View>
-            <View style={{flexDirection: 'row'}}>
-              <View style={{flex:.25}}>
-                <Text style={{paddingTop: 5}}>Player3</Text>
-              </View>
-              <View style={{flex:.3}}>
-                <Picker
-                  selectedValue={this.state.player3}
-                  style={{height: 30, width: 100}}
-                  itemStyle={styles.itemStyle}
-                  prompt='Select Player3'
-                  onValueChange={(itemValue, itemIndex) => this.setState({player3: itemValue})}
-                >
-                  <Picker.Item label="None" value="-1" />
-                  {
-                    this._availablePlayers().map((p, i) => {
-                      return(
-                          <Picker.Item key={i} label={p.label} value={p.value} />
-                      )
-                    })
-                  }
-                </Picker>
-              </View>
-            </View>
-            <View style={{flexDirection: 'row'}}>
-              <View style={{flex:.25}}>
-                <Text style={{paddingTop: 5}}>Player4</Text>
-              </View>
-              <View style={{flex:.3}}>
-                <Picker
-                  selectedValue={this.state.player4}
-                  style={{height: 30, width: 100}}
-                  itemStyle={styles.itemStyle}
-                  prompt='Select Player4'
-                  onValueChange={(itemValue, itemIndex) => this.setState({player4: itemValue})}
-                >
-                  <Picker.Item label="None" value="-1" />
-                  {
-                    this._availablePlayers().map((p, i) => {
-                      return(
-                          <Picker.Item key={i} label={p.label} value={p.value} />
-                      )
-                    })
-                  }
-                </Picker>
-              </View>
-            </View>
           </View>
-          <View style={styles.footer}>
-            <Button
-              onPress={this._schedule.bind(this)}>
-              <Text style={[styles.schedule_button,
-                            this.state.scheduleButtonActive? styles.buttonActive: styles.buttonInActive
-                          ]}>SCHEDULE TEE TIME</Text>
-            </Button>
-          </View>
-        </View>
       </GestureRecognizer>
     );
   }

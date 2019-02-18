@@ -8,7 +8,6 @@ exports.get_index = function(arr, subString) {
     if (arr[i].indexOf(subString) >= 0)
       return i
   }
-
   return index
 }
 
@@ -106,5 +105,22 @@ exports.getTeeTimeDetails = function() {
         teeTimeDetails = JSON.parse(teeTimeDetails)
         return teeTimeDetails
       } else return null
+    });
+};
+
+exports.getPlayerDetails = function() {
+  return AsyncStorage.getItem('playerDetails')
+    .then(function(playerDetails) {
+      if (playerDetails != null && playerDetails != undefined) {
+        playerDetails = JSON.parse(playerDetails)
+        return playerDetails
+      } else return null
+    });
+};
+
+exports.savePlayerDetails = function(playerDetails) {
+  return AsyncStorage.setItem('playerDetails', JSON.stringify(playerDetails))
+    .then(function(response) {
+      return
     });
 };

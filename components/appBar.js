@@ -4,6 +4,7 @@ import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 import { GlobalStyles } from '../src/styles';
 import Icon from 'react-native-fa-icons';
 import ConfigPlayers from './configPlayers'
+import {getContactDetails, saveContactDetails} from '../src/utils'
 
 class AppBar extends Component {
   constructor(props) {
@@ -72,7 +73,7 @@ class AppBar extends Component {
             <View style={{flex:.25, alignItems: 'center', justifyContent: 'center'}}>
               <TouchableWithoutFeedback onPress={this.showMenu}>
                 <View>
-                  <Icon name='align-justify' style={styles.ios_icon}/>
+                  <Icon name='ellipsis-v' style={styles.ios_icon}/>
                 </View>
               </TouchableWithoutFeedback>
               <Menu

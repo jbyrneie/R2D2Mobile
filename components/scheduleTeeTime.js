@@ -10,7 +10,7 @@ import Icon from 'react-native-fa-icons';
 import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 import DatePicker from 'react-native-datepicker'
 import {getContactDetails, getTeeTimeDetails, getCookie, get_key_value} from '../src/utils'
-import {login} from '../src/brs'
+import {login, bookTeeTime} from '../src/brs'
 import AppBar from './appBar'
 import axios from 'axios'
 
@@ -47,6 +47,7 @@ class ScheduleTeeTime extends Component {
       context.setState({contactDetails: contactDetails})
       return getTeeTimeDetails()
       .then((teeTimeDetails) => {
+        console.log('teeTimeDetails: ', teeTimeDetails);
         context.setState({teeTimeDetails: teeTimeDetails})
       })
     })
@@ -68,72 +69,21 @@ class ScheduleTeeTime extends Component {
 
     login(this.state.contactDetails, activity)
     .then((response) => {
-      console.log('Login response: ', JSON.stringify(response));
+      //console.log('Login response: ', JSON.stringify(response));
       this.setState(activity: response.activity)
+      return response
     })
-  }
-
-  _timerFinished1() {
-    console.log('_timerFinished....')
-    const context = this
-    let activity = this.state.activity
-    const HOME_PAGE = 'https://www.brsgolf.com/wicklow/member/login'
-    const LOGIN_PAGE = 'https://www.brsgolf.com/wicklow/member/login_check'
-    const PAGE = 'https://www.brsgolf.com/wicklow/member/request'
-    return axios({
-      method:'get',
-      headers: {
-        'User-Agent': 'R2D2 UA'
-      },
-      url:HOME_PAGE,
-      credentials: 'include'
-    })
-    .then(response => {
-      const cookies = response.headers['set-cookie'][0]
-      if (response.data.indexOf('Enter your 8 digit GUI') >= 0) {
-        activity.push('Logging in to BRS')
-        this.setState({activity: activity})
-        return({token: get_key_value('_csrf_token', response.data), phpsessid: getCookie('PHPSESSID', cookies)})
-      }
-    })
-    .then(sess_data => {
-      console.log('data: ', JSON.stringify(sess_data));
-      console.log('context.state.contactDetails: ', JSON.stringify(context.state.contactDetails));
-      let formData = new FormData();
-      formData.append("_username", context.state.contactDetails.username)
-      formData.append("_password", context.state.contactDetails.password)
-      formData.append("_csrf_token", sess_data.token)
-
-      let data = {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'multipart/form-data',
-          'User-Agent': 'R2D2 UA',
-          'Cookie': `PHPSESSID=${sess_data.phpsessid};`
-        },
-        credentials: 'include',
-        body: formData
-      }
-
-      console.log('Loggin in with: ', JSON);
-      return fetch(LOGIN_PAGE, data)
-      .then(response => {
-        //console.log('LOGIN_PAGE response****: ', JSON.stringify(response));
-        if (response._bodyInit.indexOf('Click here to book a tee time') >= 0) {
-          activity.push('Logged in successfully')
-          this.setState({activity: activity})
-          return({status: 9, phpsessid: sess_data.phpsessid})
-        } else {
-          throw new Error('Failed to login.....')
-        }
+    .then((response) => {
+      //return(bookTeeTime(phpsessid, dateComesAlive, dateRequired, teeTime, player1UID, player2UID, player3UID, player4UID))
+      return(bookTeeTime(response.phpsessid, "2019-01-11 10:30:00", moment(this.state.teeTimeDetails.teeTime).format('YYYY-MM-DD'), moment(this.state.teeTimeDetails.teeTime).format('HH:mm'), this.state.player1, this.state.player2, this.state.player3, this.state.player4, activity))
+      .then((response) => {
+        console.log('bookTeeTime response: ', JSON.stringify(response));
+        this.setState(activity: response.activity)
       })
     })
     .catch(function (err) {
       console.log('error********: ' + err);
-      activity.push('An error occurred')
-      context.setState({activity: activity})
-      return({status: 1, phpsessid: null})
+      this.setState(activity: err)
     })
   }
 

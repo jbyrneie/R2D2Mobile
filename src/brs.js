@@ -438,6 +438,9 @@ _bookTeeTime = function(phpsessid, dateComesAlive, dateRequired, teeTime, player
           activity(`Checking ${teeTime}`)
           console.log(`retry[${retries}]: ${status.STATUS_CODE[response.status]}\n\n`);
           return _bookTeeTime(phpsessid, dateComesAlive, dateRequired, teeTime, player1UID, player2UID, player3UID, player4UID, activity)
+        } else {
+          console.log('Giving up.... Retries exceeded.... goodbye');
+          activity('Giving up.... retries exceeded.... goodbye')
         }
         break;
       case status.error:

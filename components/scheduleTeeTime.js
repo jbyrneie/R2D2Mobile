@@ -136,7 +136,7 @@ class ScheduleTeeTime extends Component {
               onPress={() => alert('hello')}
               size={20}
             />
-            <View style={{marginTop:50}}>
+            <ScrollView style={{marginTop:40}}>
               {
                 this.state.activity.map((a, i) => {
                   return(
@@ -144,7 +144,7 @@ class ScheduleTeeTime extends Component {
                   )
                 })
               }
-            </View>
+            </ScrollView>
           </View>
           <View style={styles.footer}>
             {this.state.booking?

@@ -105,8 +105,6 @@ class SelectTeeTime extends Component {
       directionalOffsetThreshold: 60
     };
 
-    const bannerText = 'Schedule a Tee Time'
-
     return (
       <GestureRecognizer
           onSwipeRight={this._onSwipeLeftRight.bind(this)}
@@ -118,7 +116,7 @@ class SelectTeeTime extends Component {
           >
         <StatusBar barStyle = "light-content" hidden = {false}/>
           <View style={styles.container}>
-            <AppBar bannerText={bannerText} navigator={this.props.navigator} url={this.props.url}/>
+            <AppBar bannerText='Pick a Tee Time' navigator={this.props.navigator} url={this.props.url}/>
             <View style={styles.body}>
               <Text style={styles.heading}>
                 Tee Time becomes available on

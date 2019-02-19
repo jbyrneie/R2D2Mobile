@@ -14,7 +14,8 @@ class Login extends Component {
                    club: 'Club Name',
                    error: null,
                    spinner: false,
-                   nextButtonActive: true
+                   nextButtonActive: true,
+                   activity: []
                  };
   }
 
@@ -44,13 +45,20 @@ class Login extends Component {
       this.setState({club: ''})
   }
 
+  _logActivity(message) {
+    console.log('_logActivity: ', message);
+    let activity = this.state.activity
+    activity.push(message)
+    this.setState({activity: activity})
+  }
+
   _next(event) {
     console.log(`_next username: ${this.state.username} password: ${this.state.password}`)
     let activity = []
     const context = this
 
     this.setState({spinner: true})
-    login({username: this.state.username.trim(), password: this.state.password.trim(), club: this.state.club.trim().toLowerCase()}, activity)
+    login({username: this.state.username.trim(), password: this.state.password.trim(), club: this.state.club.trim().toLowerCase()}, this._logActivity.bind(this))
     .then((response) => {
       console.log('Login response: ', JSON.stringify(response));
       context.setState({spinner: false})

@@ -21,7 +21,9 @@ class ScheduleTeeTime extends Component {
       selectedTime: null,
       comesAliveTime: 5,
       teeTimeDetails: {},
-      activity: []
+      activity: [],
+      done: false,
+      booking: false
     };
   }
 
@@ -59,31 +61,40 @@ class ScheduleTeeTime extends Component {
     BackHandler.removeEventListener('hardwareBackPress', this._goBack.bind(this));
   }
 
-  _toggleTimer() {
-    this.setState({comesAliveTime: 0})
+  _done() {
+    if (!this.state.booking)
+      this.props.navigator.push({name: 'selectTeeTime', url: this.props.url});
+  }
+
+  _logActivity(message) {
+    console.log('_logActivity: ', message);
+    let activity = this.state.activity
+    activity.push(message)
+    this.setState({activity: activity})
   }
 
   _timerFinished() {
     console.log('_timerFinished....')
     let activity = this.state.activity
+    this.setState({booking: true})
 
-    login(this.state.contactDetails, activity)
+    login(this.state.contactDetails, this._logActivity.bind(this))
     .then((response) => {
       //console.log('Login response: ', JSON.stringify(response));
-      this.setState(activity: response.activity)
+      //this.setState(activity: response.activity)
       return response
     })
     .then((response) => {
       //return(bookTeeTime(phpsessid, dateComesAlive, dateRequired, teeTime, player1UID, player2UID, player3UID, player4UID))
-      return(bookTeeTime(response.phpsessid, "2019-01-11 10:30:00", moment(this.state.teeTimeDetails.teeTime).format('YYYY-MM-DD'), moment(this.state.teeTimeDetails.teeTime).format('HH:mm'), this.state.player1, this.state.player2, this.state.player3, this.state.player4, activity))
+      return(bookTeeTime(response.phpsessid, "2019-01-11 10:30:00", moment(this.state.teeTimeDetails.teeTime).format('YYYY-MM-DD'), moment(this.state.teeTimeDetails.teeTime).format('HH:mm'), this.state.player1, this.state.player2, this.state.player3, this.state.player4, this._logActivity.bind(this)))
       .then((response) => {
         console.log('bookTeeTime response: ', JSON.stringify(response));
-        this.setState(activity: response.activity)
+        this.setState({done:true, booking:false})
       })
     })
     .catch(function (err) {
       console.log('error********: ' + err);
-      this.setState(activity: err)
+      this.setState(activity: err, done:true, booking:false)
     })
   }
 
@@ -136,10 +147,16 @@ class ScheduleTeeTime extends Component {
             </View>
           </View>
           <View style={styles.footer}>
-            <Button
-              onPress={this._toggleTimer.bind(this)}>
-              <Text style={[styles.schedule_button,styles.buttonActive]}>STOP</Text>
-            </Button>
+            {this.state.booking?
+              <Button>
+                <Text style={[styles.schedule_button,styles.buttonInactive]}>BOOKING</Text>
+              </Button>
+              :
+              <Button
+                onPress={this._done.bind(this)}>
+                <Text style={[styles.schedule_button,styles.buttonActive]}>{this.state.done?'DONE':'STOP'}</Text>
+              </Button>
+            }
           </View>
         </View>
       </GestureRecognizer>

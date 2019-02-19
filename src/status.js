@@ -8,6 +8,7 @@ const BOOKED = 6
 const REFRESH = 7
 const ERROR = 8
 const LOGED_IN = 9
+const BOOKING = 10
 
 const STATUS_CODE = ['Already Booked',
                      'Already Booked By You',
@@ -18,7 +19,8 @@ const STATUS_CODE = ['Already Booked',
                      'Booked',
                      'Refresh Page Returned',
                      'Error Found',
-                     'Logged In'
+                     'Logged In',
+                     'The Tee Time is being booked'
 ]
 
 module.exports = {

@@ -10,6 +10,9 @@ const TEE_TIME_PAGE = 'https://www.brsgolf.com/wicklow/members_booking.php?opera
 const BOOK_TEE_TIME = 'https://www.brsgolf.com/wicklow/members_booking.php?operation=member_process_booking'
 const MEMBERS_BOOKING_FORM = 'https://www.brsgolf.com/wicklow/members_booking.php?operation=member_booking_form'
 
+let notLiveRetries = 0
+let retries = 0
+
 _seconds_to_time = function(seconds) {
   let measuredTime = new Date(null);
   measuredTime.setSeconds(seconds); // specify value of SECONDS
@@ -27,7 +30,7 @@ _get_tee_time_page = function(whatDate, phpsessid) {
     credentials: 'include'
   }
 
-  console.log('_get_tee_time_page fetching: ', JSON.stringify(data));
+  //console.log('_get_tee_time_page fetching: ', JSON.stringify(data));
   // Get the Page
   return fetch(`${TEE_TIME_PAGE}${whatDate}`, data)
   .then((response) => {
@@ -152,7 +155,7 @@ _fillSlots = function(form, freeSlots, player1UID, player2UID, player3UID, playe
   return form
 }
 
-_book_the_tee_time = function(bookingCode, phpsessid, freeSlots, teeTime, dateRequired, player1UID, player2UID, player3UID, player4UID) {
+_book_the_tee_time = function(bookingCode, phpsessid, freeSlots, teeTime, dateRequired, player1UID, player2UID, player3UID, player4UID, activity) {
   let formData = new FormData();
   formData.append("double_click", 'yes')
   formData.append("course_id", 1)
@@ -181,7 +184,8 @@ _book_the_tee_time = function(bookingCode, phpsessid, freeSlots, teeTime, dateRe
     .then((response) => {
       //console.log('resp: ', response._bodyInit);
       if (response._bodyInit.indexOf('The tee time has been successfully booked') >= 0) {
-        console.log(`tee-time booked for ${teeTime} on ${dateRequired}`);
+        console.log(`Tee Time booked for ${teeTime} on ${dateRequired}`);
+        activity(`Tee Time booked for ${teeTime} on ${dateRequired}`);
         return(status.BOOKED)
       } else {
         throw new Error(`Bummer, the tee-time was not booked ${teeTime} on ${dateRequired}`)
@@ -200,7 +204,7 @@ _get_time_difference = function(dateComesAlive) {
   return moment.duration(comesAlive.diff(now)).asSeconds()
 }
 
-_book_the_tee_time_recursive = function(whatDate, time, dateComesAlive, phpsessid, player1UID, player2UID, player3UID, player4UID) {
+_book_the_tee_time_recursive = function(whatDate, time, dateComesAlive, phpsessid, player1UID, player2UID, player3UID, player4UID, activity) {
     console.log('_book_the_tee_time_recursivexxx....');
     return _get_tee_time_page(whatDate, phpsessid)
     .then((response) => {
@@ -223,7 +227,7 @@ _book_the_tee_time_recursive = function(whatDate, time, dateComesAlive, phpsessi
             if ((response._bodyInit.indexOf('To book a tee time') >= 0) || (response._bodyInit.indexOf('you have hit refresh too soon') >= 0))
               // TODO console.log(`tee-time page found for ${whatDate}`);
               console.log('dummy refresh done....');
-            return(_book_the_tee_time_recursive(whatDate, time, dateComesAlive, phpsessid, player1UID, player2UID, player3UID, player4UID))
+            return(_book_the_tee_time_recursive(whatDate, time, dateComesAlive, phpsessid, player1UID, player2UID, player3UID, player4UID, activity))
           })
           break
         case status.ALREADY_BOOKED:
@@ -272,12 +276,13 @@ _book_the_tee_time_recursive = function(whatDate, time, dateComesAlive, phpsessi
                 console.log('Going to sleep for 20 seconds....', bookingCode)
                 //console.log('bookingCode: ', bookingCode, splitted[index]);
                 setTimeout(function() {
-                  return _book_the_tee_time(bookingCode, phpsessid, resp.freeSlots, time, whatDate, player1UID, player2UID, player3UID, player4UID)
+                  _book_the_tee_time(bookingCode, phpsessid, resp.freeSlots, time, whatDate, player1UID, player2UID, player3UID, player4UID, activity)
                   .then((response) => {
                     //console.log('_reserve_tee_time response: ', JSON.stringify(response));
                     return(status.BOOKED) // TODO
                   })
-                }, 5000);
+                }, 10000);
+                return(status.BOOKING) // FIX THIS
               } else {
                 console.log('Bummer, bookingCode not found....')
                 return(status.ERROR)
@@ -295,79 +300,8 @@ _book_the_tee_time_recursive = function(whatDate, time, dateComesAlive, phpsessi
   })
 }
 
-/*
-_brs_recursive = function(teeTime, phpsessid) {
-  console.log(`bookTeeTime teeTime:${teeTime} phpsessid: ${phpsessid}`);
-
-  _book_the_tee_time_recursive(dateRequired, teeTime, dateComesAlive, phpsessid, player1UID, player2UID, player3UID, player4UID)
-  .then((response) => {
-    console.log('_brs_recursive response: ', JSON.stringify(response));
-    console.log('_brs_recursive response: ', status.STATUS_CODE[response.status]);
-    switch(response.status) {
-      case status.NOT_LIVE_YET:
-        let timeDiff = _get_time_difference(dateComesAlive)
-        console.log('timeDiff: ', timeDiff);
-        let sleepTime = 0
-
-        if (timeDiff > 90)
-          sleeptime = 60000
-        else if (timeDiff > 60)
-          sleeptime = 10000
-        else if (timeDiff > 10)
-          sleeptime = 5000
-        else if (timeDiff >= 1)
-          sleeptime = 1000
-        else if (timeDiff >= 0.4)
-          sleeptime = 200
-        else {
-          console.log(`Date comes alive is in the past ${dateComesAlive}`);
-          sleeptime = 100
-          notLiveRetries++
-        }
-
-        if (notLiveRetries <= 3) {
-          console.log(`Not Live Yet (retries: ${notLiveRetries}) so going to sleep for ${sleeptime/1000} seconds as time_diff is: ${_seconds_to_time(timeDiff>=0?timeDiff:-timeDiff)}\n\n`)
-          setTimeout(function() {
-            _book_the_tee_time_recursive(dateRequired, teeTime, dateComesAlive, phpsessid, player1UID, player2UID, player3UID, player4UID)
-          }, sleeptime);
-        } else console.log('Giving up.... exceeded notLiveRetries.... goodbye');
-        break;
-      case status.BOOKED:
-        console.log(`A Tee-time for ${teeTime} has been booked ${dateRequired}`);
-        break;
-      case status.UNAVAILABLE:
-        console.log(`A Tee-time for ${teeTime} is unavailable on ${dateRequired}`);
-        break;
-      case status.ALREADY_BOOKED_BY_YOU:
-        console.log(`What are doing, you have already booked a Tee-time for ${teeTime} on ${dateRequired}`);
-        break;
-      case status.ALREADY_BOOKED:
-        console.log(`Bummer the Tee-time for ${teeTime} for ${dateRequired} is already taken`);
-        console.log(`We should try the next one retries: ${retries}\n\n`);
-
-        retries++
-
-        if (retries <= 3) {
-          teeTime = moment(teeTime, 'HH:mm').add(10, 'minutes').format('HH:mm')
-          console.log(`retry[${retries}]: ${status.STATUS_CODE[response.status]}\n\n`);
-          _book_the_tee_time_recursive(dateRequired, teeTime, dateComesAlive, phpsessid, player1UID, player2UID, player3UID, player4UID)
-        }
-        break;
-      case status.error:
-        console.log(`There was an error when trying to book the Tee-time for ${teeTime} for ${dateRequired}`);
-        break;
-      default:
-        console.log('Bummer.... we ran in to an error');
-    }
-  })
-  .catch(function (err) {
-    console.log('BRS error: ', err);
-  })
-}
-*/
-
 exports.login = function(contactDetails, activity) {
-  console.log(`Login contactDetails: ${JSON.stringify(contactDetails)} activity: ${JSON.stringify(activity)}`);
+  //console.log(`Login contactDetails: ${JSON.stringify(contactDetails)} activity: ${JSON.stringify(activity)}`);
   return axios({
     method:'get',
     headers: {
@@ -380,7 +314,8 @@ exports.login = function(contactDetails, activity) {
     const cookies = response.headers['set-cookie'][0]
     if (response.data.indexOf('Enter your 8 digit GUI') >= 0) {
       console.log('Home Page found....');
-      activity.push('Logging in to BRS')
+      //activity.push('Logging in to BRS')
+      activity('Logging in to BRS')
       return({token: get_key_value('_csrf_token', response.data), phpsessid: getCookie('PHPSESSID', cookies)})
     } else {
       console.log('Could find home page....');
@@ -412,7 +347,8 @@ exports.login = function(contactDetails, activity) {
     .then(response => {
       //console.log('LOGIN_PAGE response****: ', JSON.stringify(response));
       if (response._bodyInit.indexOf('Click here to book a tee time') >= 0) {
-        activity.push('Logged in successfully')
+        //activity.push('Logged in successfully')
+        activity('Logged in successfully')
         return({status: 9, phpsessid: sess_data.phpsessid, activity: activity})
       } else {
         console.log('NOT Logged in successfully');
@@ -422,17 +358,16 @@ exports.login = function(contactDetails, activity) {
   })
   .catch(function (err) {
     console.log('error********: ' + err);
-    activity.push('Error: ' + err)
+    //activity.push('Error: ' + err)
+    activity('Error: ' + err)
     return({status: 1, phpsessid: null, activity: activity})
   })
 }
 
-exports.bookTeeTime = function(phpsessid, dateComesAlive, dateRequired, teeTime, player1UID, player2UID, player3UID, player4UID, activity) {
+_bookTeeTime = function(phpsessid, dateComesAlive, dateRequired, teeTime, player1UID, player2UID, player3UID, player4UID, activity) {
   console.log(`bookTeeTime dateRequired: ${dateRequired} teeTime:${teeTime} phpsessid: ${phpsessid}`);
-  let notLiveRetries = 0
-  let retries = 0
 
-  return _book_the_tee_time_recursive(dateRequired, teeTime, dateComesAlive, phpsessid, player1UID, player2UID, player3UID, player4UID)
+  return _book_the_tee_time_recursive(dateRequired, teeTime, dateComesAlive, phpsessid, player1UID, player2UID, player3UID, player4UID, activity)
   .then((response) => {
     //console.log('_brs_recursive response: ', JSON.stringify(response));
     console.log('_brs_recursive response: ', status.STATUS_CODE[response]);
@@ -454,38 +389,42 @@ exports.bookTeeTime = function(phpsessid, dateComesAlive, dateRequired, teeTime,
           sleeptime = 200
         else {
           console.log(`Date comes alive is in the past ${dateComesAlive}`);
-          activity.push(`Date comes alive is in the past ${dateComesAlive}`)
+          //activity(`Date comes alive is in the past ${dateComesAlive}`)
           sleeptime = 100
           notLiveRetries++
         }
 
         if (notLiveRetries <= 3) {
           console.log(`Not Live Yet (retries: ${notLiveRetries}) so going to sleep for ${sleeptime/1000} seconds as time_diff is: ${_seconds_to_time(timeDiff>=0?timeDiff:-timeDiff)}\n\n`)
-          activity.push(`Not Live Yet (retries: ${notLiveRetries}) so going to sleep for ${sleeptime/1000} seconds as time_diff is: ${_seconds_to_time(timeDiff>=0?timeDiff:-timeDiff)}`)
+          activity(`Not Live Yet (retry: ${notLiveRetries})`)
           setTimeout(function() {
-            const resp = _book_the_tee_time_recursive(dateRequired, teeTime, dateComesAlive, phpsessid, player1UID, player2UID, player3UID, player4UID)
+            const resp = _bookTeeTime(phpsessid, dateComesAlive, dateRequired, teeTime, player1UID, player2UID, player3UID, player4UID, activity)
             if (resp == status.BOOKED) {
               console.log(`Tee Time booked for ${teeTime} on ${dateRequired}`);
-              activity.push(`Tee Time booked for ${teeTime} on ${dateRequired}`)
+              activity(`Tee Time booked for ${teeTime} on ${dateRequired}`)
               return({activity: activity})
             }
           }, sleeptime);
         } else {
           console.log('Giving up.... exceeded notLiveRetries.... goodbye');
-          activity.push('Giving up.... exceeded notLiveRetries.... goodbye')
+          activity('Giving up.... exceeded notLiveRetries.... goodbye')
         }
+        break;
+      case status.BOOKING:
+        console.log('Tee Time is being booked ....');
+        activity('Tee Time is being booked ....');
         break;
       case status.BOOKED:
         console.log(`Tee Time booked for ${teeTime} on ${dateRequired}`);
-        activity.push(`Tee Time booked for ${teeTime} on ${dateRequired}`);
+        activity(`Tee Time booked for ${teeTime} on ${dateRequired}`);
         break;
       case status.UNAVAILABLE:
         console.log(`A Tee-time for ${teeTime} is unavailable on ${dateRequired}`);
-        activity.push(`A Tee-time for ${teeTime} is unavailable on ${dateRequired}`);
+        activity(`A Tee-time for ${teeTime} is unavailable on ${dateRequired}`);
         break;
       case status.ALREADY_BOOKED_BY_YOU:
         console.log(`What are doing, you have already booked a Tee-time for ${teeTime} on ${dateRequired}`);
-        activity.push(`What are doing, you have already booked a Tee-time for ${teeTime} on ${dateRequired}`);
+        activity(`What are doing, you have already booked a Tee-time for ${teeTime} on ${dateRequired}`);
         break;
       case status.ALREADY_BOOKED:
         console.log(`Bummer the Tee-time for ${teeTime} for ${dateRequired} is already taken`);
@@ -494,25 +433,32 @@ exports.bookTeeTime = function(phpsessid, dateComesAlive, dateRequired, teeTime,
         retries++
 
         if (retries <= 3) {
+          activity(`${teeTime} already booked`)
           teeTime = moment(teeTime, 'HH:mm').add(10, 'minutes').format('HH:mm')
+          activity(`Checking ${teeTime}`)
           console.log(`retry[${retries}]: ${status.STATUS_CODE[response.status]}\n\n`);
-          activity.push(`retry[${retries}]: ${status.STATUS_CODE[response.status]}`)
-          _book_the_tee_time_recursive(dateRequired, teeTime, dateComesAlive, phpsessid, player1UID, player2UID, player3UID, player4UID)
+          return _bookTeeTime(phpsessid, dateComesAlive, dateRequired, teeTime, player1UID, player2UID, player3UID, player4UID, activity)
         }
         break;
       case status.error:
         console.log(`There was an error when trying to book the Tee-time for ${teeTime} for ${dateRequired}`);
-        activity.push(`There was an error when trying to book the Tee-time for ${teeTime} for ${dateRequired}`);
+        activity(`There was an error when trying to book the Tee-time for ${teeTime} for ${dateRequired}`);
         break;
       default:
         console.log('Bummer.... we ran in to an error');
-        activity.push('Bummer.... we ran in to an error');
+        activity('Bummer.... we ran in to an error');
     }
-    return({activity: activity})
+    return
   })
   .catch(function (err) {
     console.log('BRS error: ', err);
-    activity.push('BRS error: ' + err)
-    return({activity: activity})
+    activity('BRS error: ' + err)
+    return
   })
+}
+
+exports.bookTeeTime = function(phpsessid, dateComesAlive, dateRequired, teeTime, player1UID, player2UID, player3UID, player4UID, activity) {
+  notLiveRetries = 0
+  retries = 0
+  return _bookTeeTime(phpsessid, dateComesAlive, dateRequired, teeTime, player1UID, player2UID, player3UID, player4UID, activity)
 }

@@ -20,11 +20,9 @@ class Login extends Component {
   }
 
   componentWillMount() {
-    console.log('Login componentWillMount');
     const context = this
     getContactDetails()
     .then((contactDetails) => {
-      console.log('contactDetails: ', JSON.stringify(contactDetails));
       if (contactDetails)
         context.setState({username: contactDetails.username, password: contactDetails.password, club: contactDetails.club})
     })
@@ -46,22 +44,19 @@ class Login extends Component {
   }
 
   _logActivity(message) {
-    console.log('_logActivity: ', message);
     let activity = this.state.activity
     activity.push(message)
     this.setState({activity: activity})
   }
 
   _next(event) {
-    console.log(`_next username: ${this.state.username} password: ${this.state.password}`)
     let activity = []
     const context = this
 
     this.setState({spinner: true})
     login({username: this.state.username.trim(), password: this.state.password.trim(), club: this.state.club.trim().toLowerCase()}, this._logActivity.bind(this))
     .then((response) => {
-      console.log('Login response: ', JSON.stringify(response));
-      context.setState({spinner: false})
+    context.setState({spinner: false})
       return saveContactDetails({username: this.state.username.trim(), password: this.state.password.trim(), club: this.state.club.trim().toLowerCase(), verified: response.status == 9?true:false})
       .then(() => {
         return response
@@ -74,7 +69,6 @@ class Login extends Component {
       else throw new Error('Failed to login.....')
     })
     .catch(function (err) {
-      console.log('error********: ' + err);
       context.setState({spinner: false})
       context.setState({error: 'Login failed.....'})
     })

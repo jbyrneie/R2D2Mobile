@@ -66,7 +66,6 @@ exports.parseCookies = function (cookieString) {
 };
 
 exports.getCookie = function (cookieName, cookies) {
-  console.log(`getCookie cookieName: ${cookieName} cookies: ${cookieName}`);
   return _parseCookies(cookies)[cookieName] || '';
 };
 

@@ -13,8 +13,6 @@ import {getPlayerDetails, saveTeeTimeDetails} from '../src/utils'
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 import AppBar from './appBar'
 import ConfigPlayers from './configPlayers'
-//import { Button } from 'react-native-elements';
-//import Icon from 'react-native-vector-icons/FontAwesome';
 
 class SelectTeeTime extends Component {
   constructor(props) {
@@ -98,7 +96,6 @@ class SelectTeeTime extends Component {
     if (this.state.player4 == -1)
       players.push({label:"Philip", value:"643"})
 
-    console.log(`_availablePlayers player2: ${this.state.player2} player3: ${this.state.player3} player4: ${this.state.player4} players: ${JSON.stringify(players)}`);
     return(players)
   }
 

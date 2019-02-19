@@ -49,7 +49,6 @@ class ScheduleTeeTime extends Component {
       context.setState({contactDetails: contactDetails})
       return getTeeTimeDetails()
       .then((teeTimeDetails) => {
-        console.log('teeTimeDetails: ', teeTimeDetails);
         context.setState({teeTimeDetails: teeTimeDetails})
       })
     })
@@ -67,28 +66,22 @@ class ScheduleTeeTime extends Component {
   }
 
   _logActivity(message) {
-    console.log('_logActivity: ', message);
     let activity = this.state.activity
     activity.push(message)
     this.setState({activity: activity})
   }
 
   _timerFinished() {
-    console.log('_timerFinished....')
     let activity = this.state.activity
     this.setState({booking: true})
 
     login(this.state.contactDetails, this._logActivity.bind(this))
     .then((response) => {
-      //console.log('Login response: ', JSON.stringify(response));
-      //this.setState(activity: response.activity)
       return response
     })
     .then((response) => {
-      //return(bookTeeTime(phpsessid, dateComesAlive, dateRequired, teeTime, player1UID, player2UID, player3UID, player4UID))
       return(bookTeeTime(response.phpsessid, "2019-01-11 10:30:00", moment(this.state.teeTimeDetails.teeTime).format('YYYY-MM-DD'), moment(this.state.teeTimeDetails.teeTime).format('HH:mm'), this.state.player1, this.state.player2, this.state.player3, this.state.player4, this._logActivity.bind(this)))
       .then((response) => {
-        console.log('bookTeeTime response: ', JSON.stringify(response));
         this.setState({done:true, booking:false})
       })
     })
@@ -99,10 +92,8 @@ class ScheduleTeeTime extends Component {
   }
 
   _calculateSeconds(dateComesAlive) {
-    console.log('_calculateSeconds: ', dateComesAlive);
     const comesAlive = moment(dateComesAlive, 'YYYY-MM-DD HH:mm')
   	const now = moment(new Date());
-    console.log('seconds: ', moment.duration(comesAlive.diff(now)).asSeconds())
     return Math.round(moment.duration(comesAlive.diff(now)).asSeconds())
   }
 

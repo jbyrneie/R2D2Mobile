@@ -11,7 +11,7 @@ class Players extends Component {
     this.state = { visible: false,
                    showModal: true,
                    playerDetails: {},
-                   player1: {name:'Name', value:'yyyy'},
+                   player1: {},
                    player2: {},
                    player3: {},
                    player4: {},
@@ -19,7 +19,7 @@ class Players extends Component {
   }
 
   _resetUserName(player, value) {
-    console.log(`_resetUserName ${player} ${attribute}`);
+    console.log(`_resetUserName ${player} ${value}`);
     console.log('Player: ', JSON.stringify(this.state[player]));
     if (value == 'Name') {
       let thePlayer = this.state[player]
@@ -29,24 +29,35 @@ class Players extends Component {
   }
 
   _resetUserValue(player, value) {
-    console.log(`_resetUserName ${player} ${attribute}`);
+    console.log(`_resetUserName ${player} ${value}`);
     console.log('Player: ', JSON.stringify(this.state[player]));
     if (value == 'BRS ID') {
       let thePlayer = this.state[player]
-      thePlayer.value = ''
+      thePlayer.id = ''
       this.setState({[player]: thePlayer})
     }
   }
 
-  _updatePlayerName(player, value) {
+  _updatePlayer(player, attribute, value) {
     console.log(`value: ${value} player: ${player} attribute: ${attribute}`);
     let thePlayer = this.state[player]
-    thePlayer.name = value
+    thePlayer[attribute] = value
+    console.log(`thePlayer: ${JSON.stringify(thePlayer)}`);
     this.setState({[player]: thePlayer})
   }
 
   _savePlayers(event) {
-    this.props.showModal(false)
+    console.log(`_savePlayers: ${JSON.stringify(this.state.playerDetails)}`);
+    const details = [{name: this.state.player1.name, id: this.state.player1.id},
+                       {name: this.state.player2.name, id: this.state.player2.id},
+                       {name: this.state.player3.name, id: this.state.player3.id},
+                       {name: this.state.player4.name, id: this.state.player4.id}
+                      ]
+    console.log('details: ', JSON.stringify(details));
+    savePlayerDetails(details)
+    .then((playerDetails) => {
+      this.props.showModal(false)
+    })
   }
 
   _cancel(event) {
@@ -61,16 +72,36 @@ class Players extends Component {
     else return false
   }
 
-  componentWillMount() {
+  _getPlayers() {
+    console.log('configPlayer _getPlayers****.....');
     const context = this
     getPlayerDetails()
     .then((playerDetails) => {
-      context.setState({playerDetails: playerDetails})
+      context.setState({player1: playerDetails[0]&&playerDetails[0].id&&playerDetails[0].id.length>0?playerDetails[0]:{"name":"Name","id":"BRS ID"},
+                        player2: playerDetails[1]&&playerDetails[1].id&&playerDetails[1].id.length>0?playerDetails[1]:{"name":"Name","id":"BRS ID"},
+                        player3: playerDetails[2]&&playerDetails[2].id&&playerDetails[2].id.length>0?playerDetails[2]:{"name":"Name","id":"BRS ID"},
+                        player4: playerDetails[3]&&playerDetails[3].id&&playerDetails[3].id.length>0?playerDetails[3]:{"name":"Name","id":"BRS ID"},
+                       })
     })
   }
 
+/*
+  componentWillUpdate() {
+    console.log('configPlayer componentWillUpdate****.....');
+    this._getPlayers()
+  }
+*/
+
+/*
   componentWillMount() {
-    BackHandler.addEventListener('hardwareBackPress', this._goBack.bind(this));
+    console.log('configPlayer componentWillMount****.....');
+    this._getPlayers()
+  }
+*/
+
+  componentDidMount() {
+    console.log('configPlayer componentDidMount****.....');
+    this._getPlayers()
   }
 
   componentWillUnmount() {
@@ -78,10 +109,13 @@ class Players extends Component {
   }
 
   render () {
+    console.log('configPlayer render....');
     const player1 = this.state.player1
     const player2 = this.state.player2
     const player3 = this.state.player3
     const player4 = this.state.player4
+
+    console.log(`render player1: ${JSON.stringify(player1)} player2: ${JSON.stringify(player2)} player3: ${JSON.stringify(player3)} player4: ${JSON.stringify(player4)}`);
 
     return (
       <View style={styles.container}>
@@ -96,10 +130,10 @@ class Players extends Component {
                   <Text style={{paddingTop: 20}}>Player1</Text>
                 </View>
                 <View style={{flex:.3}}>
-                  <TextInput value={player1?player1.name:'Name'} onFocus={this._resetUserName.bind(this, 'player1', player1?player1.name:'Name')} onChangeText={this._updatePlayerName.bind(this, 'player1')}/>
+                  <TextInput value={player1?player1.name:'Name'} onFocus={this._resetUserName.bind(this, 'player1', player1?player1.name:'Name')} onChangeText={this._updatePlayer.bind(this, 'player1', 'name')}/>
                 </View>
                 <View style={{flex:.3}}>
-                  <TextInput style={{color: 'gray'}} value={player1?player1.id:'BRS ID'} onFocus={this._resetUserValue.bind(this, 'player1', player1?player1.value:'BRS ID')} onChangeText={(text) => this.setState({input: text})}/>
+                  <TextInput style={{color: 'gray'}} value={player1?player1.id:'BRS ID'} onFocus={this._resetUserValue.bind(this, 'player1', player1?player1.id:'BRS ID')} onChangeText={this._updatePlayer.bind(this, 'player1', 'id')}/>
                 </View>
               </View>
               <View style={{flexDirection: 'row'}}>
@@ -107,10 +141,10 @@ class Players extends Component {
                   <Text style={{paddingTop: 20}}>Player2</Text>
                 </View>
                 <View style={{flex:.3}}>
-                  <TextInput onChangeText={(text) => this.setState({input: text})}/>
+                  <TextInput value={player2?player2.name:'Name'} onFocus={this._resetUserName.bind(this, 'player2', player2?player2.name:'Name')} onChangeText={this._updatePlayer.bind(this, 'player2', 'name')}/>
                 </View>
                 <View style={{flex:.3}}>
-                  <TextInput onChangeText={(text) => this.setState({input: text})}/>
+                  <TextInput style={{color: 'gray'}} value={player1?player2.id:'BRS ID'} onFocus={this._resetUserValue.bind(this, 'player2', player1?player2.id:'BRS ID')} onChangeText={this._updatePlayer.bind(this, 'player2', 'id')}/>
                 </View>
               </View>
               <View style={{flexDirection: 'row'}}>
@@ -118,10 +152,10 @@ class Players extends Component {
                   <Text style={{paddingTop: 20}}>Player3</Text>
                 </View>
                 <View style={{flex:.3}}>
-                  <TextInput onChangeText={(text) => this.setState({input: text})}/>
+                  <TextInput value={player3?player3.name:'Name'} onFocus={this._resetUserName.bind(this, 'player3', player2?player3.name:'Name')} onChangeText={this._updatePlayer.bind(this, 'player3', 'name')}/>
                 </View>
                 <View style={{flex:.3}}>
-                  <TextInput onChangeText={(text) => this.setState({input: text})}/>
+                  <TextInput style={{color: 'gray'}} value={player3?player3.id:'BRS ID'} onFocus={this._resetUserValue.bind(this, 'player3', player3?player3.id:'BRS ID')} onChangeText={this._updatePlayer.bind(this, 'player3', 'id')}/>
                 </View>
               </View>
               <View style={{flexDirection: 'row'}}>
@@ -129,10 +163,10 @@ class Players extends Component {
                   <Text style={{paddingTop: 20}}>Player4</Text>
                 </View>
                 <View style={{flex:.3}}>
-                  <TextInput onChangeText={(text) => this.setState({input: text})}/>
+                  <TextInput value={player4.name} onFocus={this._resetUserName.bind(this, 'player4', player4.name)} onChangeText={this._updatePlayer.bind(this, 'player4', 'name')}/>
                 </View>
                 <View style={{flex:.3}}>
-                  <TextInput onChangeText={(text) => this.setState({input: text})}/>
+                  <TextInput style={{color: 'gray'}} value={player4.id} onFocus={this._resetUserValue.bind(this, 'player4', player4.id)} onChangeText={this._updatePlayer.bind(this, 'player4', 'id')}/>
                 </View>
               </View>
               <View style={{marginTop:25}}>

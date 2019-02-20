@@ -118,6 +118,7 @@ exports.getPlayerDetails = function() {
 };
 
 exports.savePlayerDetails = function(playerDetails) {
+  console.log(`savePlayerDetails: ${JSON.stringify(playerDetails)}`);
   return AsyncStorage.setItem('playerDetails', JSON.stringify(playerDetails))
     .then(function(response) {
       return

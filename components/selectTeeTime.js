@@ -22,14 +22,13 @@ class SelectTeeTime extends Component {
       showConfirmScheduleModal: false,
       showScheduleAlertModal: false,
       showContactGLGModal: false,
-      backgroundColor: 'white',
       scheduleButtonActive:true,
       dateAvailable:moment().format('YYYY-MM-DD HH:mm'),
       teeTime:moment().format('YYYY-MM-DD HH:mm'),
-      player1: 64,
-      player2: -1,
-      player3: -1,
-      player4: -1,
+      player1: {},
+      player2: {},
+      player3: {},
+      player4: {},
       showConfigPlayersModal: false
     };
   }
@@ -71,35 +70,79 @@ class SelectTeeTime extends Component {
     })
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const context = this
     getPlayerDetails()
     .then((playerDetails) => {
-      context.setState({playerDetails: playerDetails, showConfigPlayersModal: playerDetails?false:true})
+      context.setState({player1: playerDetails[0]&&playerDetails[0].id&&playerDetails[0].id.length>0?playerDetails[0]:{"name":"Name","id":"BRS ID"},
+                        player2: playerDetails[1]&&playerDetails[1].id&&playerDetails[1].id.length>0?playerDetails[1]:{"name":"Name","id":"BRS ID"},
+                        player3: playerDetails[2]&&playerDetails[2].id&&playerDetails[2].id.length>0?playerDetails[2]:{"name":"Name","id":"BRS ID"},
+                        player4: playerDetails[3]&&playerDetails[3].id&&playerDetails[3].id.length>0?playerDetails[3]:{"name":"Name","id":"BRS ID"},
+                        showConfigPlayersModal: playerDetails?false:true
+                       })
       BackHandler.addEventListener('hardwareBackPress', context._goBack.bind(this));
     })
   }
 
+  componentWillMount() {
+    const context = this
+    getPlayerDetails()
+    .then((playerDetails) => {
+      context.setState({player1: playerDetails[0]&&playerDetails[0].id&&playerDetails[0].id.length>0?playerDetails[0]:{"name":"Name","id":"BRS ID"},
+                        player2: playerDetails[1]&&playerDetails[1].id&&playerDetails[1].id.length>0?playerDetails[1]:{"name":"Name","id":"BRS ID"},
+                        player3: playerDetails[2]&&playerDetails[2].id&&playerDetails[2].id.length>0?playerDetails[2]:{"name":"Name","id":"BRS ID"},
+                        player4: playerDetails[3]&&playerDetails[3].id&&playerDetails[3].id.length>0?playerDetails[3]:{"name":"Name","id":"BRS ID"},
+                        showConfigPlayersModal: playerDetails?false:true
+                       })
+      BackHandler.addEventListener('hardwareBackPress', context._goBack.bind(this));
+    })
+  }
+
+  componentWillUpdate() {
+    console.log('selectTeeTime componentWillUpdate');
+  }
+
   componentWillUnmount() {
-      BackHandler.removeEventListener('hardwareBackPress', this._goBack.bind(this));
+    BackHandler.removeEventListener('hardwareBackPress', this._goBack.bind(this));
   }
 
   _availablePlayers() {
+    console.log(`_availablePlayers player1: ${JSON.stringify(this.state.player1)} player2: ${JSON.stringify(this.state.player2)} player3: ${JSON.stringify(this.state.player3)} player4: ${JSON.stringify(this.state.player4)}`);
+
     let players = []
+    /*
+    players.push({label:`${this.state.player1 && this.state.player1.name && this.state.player1.name.length?this.state.player1.name:''}`,
+                  value:`${this.state.player1 && this.state.player1.name && this.state.player1.name.length?this.state.player1.id:''}`})
+    players.push({label:`${this.state.player2 && this.state.player2.name && this.state.player2.name.length?this.state.player2.name:''}`,
+                  value:`${this.state.player2 && this.state.player2.name && this.state.player2.name.length?this.state.player2.id:''}`})
+    players.push({label:`${this.state.player3 && this.state.player3.name && this.state.player3.name.length?this.state.player3.name:''}`,
+                  value:`${this.state.player3 && this.state.player3.name && this.state.player3.name.length?this.state.player3.id:''}`})
+    players.push({label:`${this.state.player4 && this.state.player4.name && this.state.player4.name.length?this.state.player4.name:''}`,
+                  value:`${this.state.player4 && this.state.player4.name && this.state.player4.name.length?this.state.player4.id:''}`})
+    */
+    return getPlayerDetails()
+    .then((playerDetails) => {
+      players.push({label:`${playerDetails[0].name}`, value:`${playerDetails[0].id}`})
+      players.push({label:`${playerDetails[1].name}`, value:`${playerDetails[1].id}`})
+      players.push({label:`${playerDetails[2].name}`, value:`${playerDetails[2].id}`})
+      players.push({label:`${playerDetails[3].name}`, value:`${playerDetails[3].id}`})
+      return(players)
+    })
+  }
 
-    if (this.state.player2 == -1)
-      players.push({label:"Colm", value:"641"})
-
-    if (this.state.player3 == -1)
-      players.push({label:"Cormac", value:"642"})
-
-    if (this.state.player4 == -1)
-      players.push({label:"Philip", value:"643"})
-
-    return(players)
+  _savePlayer(player, value) {
+    this.setState({[player]: value})
   }
 
   render() {
+    let availablePlayers = []
+    this._availablePlayers()
+    .then((available) => {
+      console.log('available.... ', JSON.stringify(available));
+      availablePlayers = available
+    })
+
+    console.log('selectTeeTime render availablePlayers: ', JSON.stringify(availablePlayers));
     const config = {
       velocityThreshold: 0.2,
       directionalOffsetThreshold: 60
@@ -184,9 +227,16 @@ class SelectTeeTime extends Component {
                     style={{height: 30, width: 100}}
                     itemStyle={styles.itemStyle}
                     prompt='Select Player1'
-                    onValueChange={(itemValue, itemIndex) => this.setState({player1: itemValue})}
+                    onValueChange={this._savePlayer.bind(this, 'player1')}
                   >
-                    <Picker.Item label="Jack" value="64" />
+                  <Picker.Item label="None" value="-1" />
+                    {
+                      availablePlayers.map((p, i) => {
+                        return(
+                            <Picker.Item key={i} label={p.label} value={p.value} />
+                        )
+                      })
+                    }
                   </Picker>
                 </View>
               </View>
@@ -200,11 +250,11 @@ class SelectTeeTime extends Component {
                     style={{height: 30, width: 100}}
                     itemStyle={styles.itemStyle}
                     prompt='Select Player2'
-                    onValueChange={(itemValue, itemIndex) => this.setState({player2: itemValue})}
+                    onValueChange={this._savePlayer.bind(this, 'player2')}
                   >
                     <Picker.Item label="None" value="-1" />
                     {
-                      this._availablePlayers().map((p, i) => {
+                      availablePlayers.map((p, i) => {
                         return(
                             <Picker.Item key={i} label={p.label} value={p.value} />
                         )
@@ -223,11 +273,11 @@ class SelectTeeTime extends Component {
                     style={{height: 30, width: 100}}
                     itemStyle={styles.itemStyle}
                     prompt='Select Player3'
-                    onValueChange={(itemValue, itemIndex) => this.setState({player3: itemValue})}
+                    onValueChange={this._savePlayer.bind(this, 'player3')}
                   >
                     <Picker.Item label="None" value="-1" />
                     {
-                      this._availablePlayers().map((p, i) => {
+                      availablePlayers.map((p, i) => {
                         return(
                             <Picker.Item key={i} label={p.label} value={p.value} />
                         )
@@ -246,11 +296,11 @@ class SelectTeeTime extends Component {
                     style={{height: 30, width: 100}}
                     itemStyle={styles.itemStyle}
                     prompt='Select Player4'
-                    onValueChange={(itemValue, itemIndex) => this.setState({player4: itemValue})}
+                    onValueChange={this._savePlayer.bind(this, 'player4')}
                   >
                     <Picker.Item label="None" value="-1" />
                     {
-                      this._availablePlayers().map((p, i) => {
+                      availablePlayers.map((p, i) => {
                         return(
                             <Picker.Item key={i} label={p.label} value={p.value} />
                         )

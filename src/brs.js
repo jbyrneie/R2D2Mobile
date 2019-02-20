@@ -125,22 +125,23 @@ _get_tee_time = function(response, time) {
   }
 }
 
-_fillSlots = function(form, freeSlots, player1UID, player2UID, player3UID, player4UID) {
+_fillSlots = function(formData, freeSlots, player1UID, player2UID, player3UID, player4UID) {
+  console.log(`_fillSlots ${player1UID} ${player2UID} ${player3UID} ${player4UID}`);
   let playerUIDs = [player1UID?player1UID:null, player2UID?player2UID:null, player3UID?player3UID:null, player4UID?player4UID:null]
-  const slots = ['Player1_uid', 'Player2_uid', 'Player3_uid', 'Player4_uid']
 
   for (var i = 0; i < freeSlots.length; i++) {
     if (freeSlots[i]) {
       for (var j = 0; j < playerUIDs.length; j++) {
         if (playerUIDs[j] && playerUIDs[j]!=-1) {
-          form[slots[i]] = playerUIDs[j]
+          formData.append(`Player${i+1}_uid`, playerUIDs[j])
           playerUIDs[j] = null
           break;
         }
       }
     }
   }
-  return form
+  console.log('formData: ', formData);
+  return formData
 }
 
 _book_the_tee_time = function(bookingCode, phpsessid, freeSlots, teeTime, dateRequired, player1UID, player2UID, player3UID, player4UID, activity) {
@@ -150,12 +151,9 @@ _book_the_tee_time = function(bookingCode, phpsessid, freeSlots, teeTime, dateRe
   formData.append("d_date", dateRequired)
   formData.append("TeeTime", `${teeTime}:00`)
   formData.append("bookingCode", bookingCode)
-  formData.append("Player1_uid", '64')
-  formData.append("Player2_uid", '')
-  formData.append("Player3_uid", '')
-  formData.append("Player4_uid", '')
-  //options.form = _fillSlots(options.form, freeSlots, player1UID, player2UID, player3UID, player4UID)
-
+  _fillSlots(formData, freeSlots, player1UID, player2UID, player3UID, player4UID)
+  //Jack
+  console.log('formData: ', formData);
   let data = {
     method: 'POST',
     headers: {
@@ -164,7 +162,7 @@ _book_the_tee_time = function(bookingCode, phpsessid, freeSlots, teeTime, dateRe
       'Cookie': `PHPSESSID=${phpsessid};`
     },
     credentials: 'include',
-    body: formData
+    body: formDataxxx
   }
 
   return fetch(BOOK_TEE_TIME, data)
@@ -174,6 +172,7 @@ _book_the_tee_time = function(bookingCode, phpsessid, freeSlots, teeTime, dateRe
         activity(`Tee Time booked for ${teeTime} on ${dateRequired}`);
         return(status.BOOKED)
       } else {
+        activity(`Bummer, the tee-time was not booked ${teeTime} on ${dateRequired}`);
         throw new Error(`Bummer, the tee-time was not booked ${teeTime} on ${dateRequired}`)
       }
     })

@@ -32,14 +32,8 @@ class ScheduleTeeTime extends Component {
   }
 
   _goBack() {
-    if (this.state.showConfirmScheduleModal || this.state.showScheduleAlertModal || this.state.showContactGLGModal) {
-      this.setState({showDeclineReasonModal: false, showScheduleAlertModal: false, showContactGLGModal: false})
-      return true
-    }
-    else {
-      this.props.navigator.pop()
-      return true
-    }
+    this.props.navigator.pop()
+    return true
   }
 
   componentWillMount() {
@@ -80,8 +74,7 @@ class ScheduleTeeTime extends Component {
       return response
     })
     .then((response) => {
-      //return(bookTeeTime(response.phpsessid, "2019-01-11 10:30:00", moment(this.state.teeTimeDetails.teeTime).format('YYYY-MM-DD'), moment(this.state.teeTimeDetails.teeTime).format('HH:mm'), this.state.player1, this.state.player2, this.state.player3, this.state.player4, this._logActivity.bind(this)))
-      return(bookTeeTime(response.phpsessid, "2019-01-11 10:30:00", moment(this.state.teeTimeDetails.teeTime).format('YYYY-MM-DD'), moment(this.state.teeTimeDetails.teeTime).format('HH:mm'), 64, 666, 158, 566, this._logActivity.bind(this)))
+      return(bookTeeTime(response.phpsessid, "2019-01-11 10:30:00", moment(this.state.teeTimeDetails.teeTime).format('YYYY-MM-DD'), moment(this.state.teeTimeDetails.teeTime).format('HH:mm'), this.state.teeTimeDetails.player1, this.state.teeTimeDetails.player2, this.state.teeTimeDetails.player3, this.state.teeTimeDetails.player4, this._logActivity.bind(this)))
       .then((response) => {
         this.setState({done:true, booking:false})
       })

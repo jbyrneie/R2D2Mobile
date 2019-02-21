@@ -4,6 +4,7 @@ import Modal from 'react-native-modal'
 import Button from 'react-native-button';
 import { GlobalStyles } from '../src/styles';
 import {getPlayerDetails, savePlayerDetails} from '../src/utils'
+import { EventRegister } from 'react-native-event-listeners'
 
 class Players extends Component {
   constructor(props) {
@@ -19,8 +20,6 @@ class Players extends Component {
   }
 
   _resetUserName(player, value) {
-    console.log(`_resetUserName ${player} ${value}`);
-    console.log('Player: ', JSON.stringify(this.state[player]));
     if (value == 'Name') {
       let thePlayer = this.state[player]
       thePlayer.name = ''
@@ -29,8 +28,6 @@ class Players extends Component {
   }
 
   _resetUserValue(player, value) {
-    console.log(`_resetUserName ${player} ${value}`);
-    console.log('Player: ', JSON.stringify(this.state[player]));
     if (value == 'BRS ID') {
       let thePlayer = this.state[player]
       thePlayer.id = ''
@@ -39,23 +36,20 @@ class Players extends Component {
   }
 
   _updatePlayer(player, attribute, value) {
-    console.log(`value: ${value} player: ${player} attribute: ${attribute}`);
     let thePlayer = this.state[player]
     thePlayer[attribute] = value
-    console.log(`thePlayer: ${JSON.stringify(thePlayer)}`);
     this.setState({[player]: thePlayer})
   }
 
   _savePlayers(event) {
-    console.log(`_savePlayers: ${JSON.stringify(this.state.playerDetails)}`);
     const details = [{name: this.state.player1.name, id: this.state.player1.id},
                        {name: this.state.player2.name, id: this.state.player2.id},
                        {name: this.state.player3.name, id: this.state.player3.id},
                        {name: this.state.player4.name, id: this.state.player4.id}
                       ]
-    console.log('details: ', JSON.stringify(details));
     savePlayerDetails(details)
     .then((playerDetails) => {
+      EventRegister.emit('playersUpdatedEvent', '')
       this.props.showModal(false)
     })
   }
@@ -73,7 +67,6 @@ class Players extends Component {
   }
 
   _getPlayers() {
-    console.log('configPlayer _getPlayers****.....');
     const context = this
     getPlayerDetails()
     .then((playerDetails) => {
@@ -85,22 +78,7 @@ class Players extends Component {
     })
   }
 
-/*
-  componentWillUpdate() {
-    console.log('configPlayer componentWillUpdate****.....');
-    this._getPlayers()
-  }
-*/
-
-/*
-  componentWillMount() {
-    console.log('configPlayer componentWillMount****.....');
-    this._getPlayers()
-  }
-*/
-
   componentDidMount() {
-    console.log('configPlayer componentDidMount****.....');
     this._getPlayers()
   }
 
@@ -109,13 +87,10 @@ class Players extends Component {
   }
 
   render () {
-    console.log('configPlayer render....');
     const player1 = this.state.player1
     const player2 = this.state.player2
     const player3 = this.state.player3
     const player4 = this.state.player4
-
-    console.log(`render player1: ${JSON.stringify(player1)} player2: ${JSON.stringify(player2)} player3: ${JSON.stringify(player3)} player4: ${JSON.stringify(player4)}`);
 
     return (
       <View style={styles.container}>

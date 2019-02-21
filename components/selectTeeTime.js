@@ -13,18 +13,17 @@ import {getPlayerDetails, saveTeeTimeDetails} from '../src/utils'
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 import AppBar from './appBar'
 import ConfigPlayers from './configPlayers'
+import { EventRegister } from 'react-native-event-listeners'
 
 class SelectTeeTime extends Component {
   constructor(props) {
     super(props);
     this.state = {
       selectedTime: null,
-      showConfirmScheduleModal: false,
-      showScheduleAlertModal: false,
-      showContactGLGModal: false,
-      scheduleButtonActive:true,
+      scheduleButtonActive:false,
       dateAvailable:moment().format('YYYY-MM-DD HH:mm'),
       teeTime:moment().format('YYYY-MM-DD HH:mm'),
+      playerDetails: [],
       player1: {},
       player2: {},
       player3: {},
@@ -38,10 +37,10 @@ class SelectTeeTime extends Component {
     if (this.state.scheduleButtonActive) {
       saveTeeTimeDetails({dateAvailable: this.state.dateAvailable,
                           teeTime: this.state.teeTime,
-                          player1: this.state.player1,
-                          player2: this.state.player2,
-                          player3: this.state.player3,
-                          player4: this.state.player4
+                          player1: this.state.player1?this.state.player1:-1,
+                          player2: this.state.player2?this.state.player2:-1,
+                          player3: this.state.player3?this.state.player3:-1,
+                          player4: this.state.player4?this.state.player4:-1
                         })
       .then(() => {
         context.props.navigator.push({name: 'scheduleTeeTime', url: context.props.url});
@@ -53,96 +52,52 @@ class SelectTeeTime extends Component {
     this.props.navigator.pop();
   }
 
-  _goBack() {
-    if (this.state.showConfirmScheduleModal || this.state.showScheduleAlertModal || this.state.showContactGLGModal) {
-      this.setState({showDeclineReasonModal: false, showScheduleAlertModal: false, showContactGLGModal: false})
-      return true
-    }
-    else {
-      this.props.navigator.pop()
-      return true
-    }
-  }
-
   _showConfigPlayersModal(showModal) {
     this.setState({
       showConfigPlayersModal: showModal
     })
   }
 
-  componentDidMount() {
-    const context = this
-    getPlayerDetails()
-    .then((playerDetails) => {
-      context.setState({player1: playerDetails[0]&&playerDetails[0].id&&playerDetails[0].id.length>0?playerDetails[0]:{"name":"Name","id":"BRS ID"},
-                        player2: playerDetails[1]&&playerDetails[1].id&&playerDetails[1].id.length>0?playerDetails[1]:{"name":"Name","id":"BRS ID"},
-                        player3: playerDetails[2]&&playerDetails[2].id&&playerDetails[2].id.length>0?playerDetails[2]:{"name":"Name","id":"BRS ID"},
-                        player4: playerDetails[3]&&playerDetails[3].id&&playerDetails[3].id.length>0?playerDetails[3]:{"name":"Name","id":"BRS ID"},
-                        showConfigPlayersModal: playerDetails?false:true
-                       })
-      BackHandler.addEventListener('hardwareBackPress', context._goBack.bind(this));
-    })
-  }
-
   componentWillMount() {
     const context = this
+    this.listener = EventRegister.addEventListener('playersUpdatedEvent', () => {
+      getPlayerDetails()
+      .then((playerDetails) => {
+        context.setState({playerDetails: playerDetails})
+      })
+    })
+
     getPlayerDetails()
     .then((playerDetails) => {
-      context.setState({player1: playerDetails[0]&&playerDetails[0].id&&playerDetails[0].id.length>0?playerDetails[0]:{"name":"Name","id":"BRS ID"},
-                        player2: playerDetails[1]&&playerDetails[1].id&&playerDetails[1].id.length>0?playerDetails[1]:{"name":"Name","id":"BRS ID"},
-                        player3: playerDetails[2]&&playerDetails[2].id&&playerDetails[2].id.length>0?playerDetails[2]:{"name":"Name","id":"BRS ID"},
-                        player4: playerDetails[3]&&playerDetails[3].id&&playerDetails[3].id.length>0?playerDetails[3]:{"name":"Name","id":"BRS ID"},
-                        showConfigPlayersModal: playerDetails?false:true
-                       })
-      BackHandler.addEventListener('hardwareBackPress', context._goBack.bind(this));
-    })
-  }
-
-  componentWillUpdate() {
-    console.log('selectTeeTime componentWillUpdate');
-  }
-
-  componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this._goBack.bind(this));
-  }
-
-  _availablePlayers() {
-    console.log(`_availablePlayers player1: ${JSON.stringify(this.state.player1)} player2: ${JSON.stringify(this.state.player2)} player3: ${JSON.stringify(this.state.player3)} player4: ${JSON.stringify(this.state.player4)}`);
-
-    let players = []
-    /*
-    players.push({label:`${this.state.player1 && this.state.player1.name && this.state.player1.name.length?this.state.player1.name:''}`,
-                  value:`${this.state.player1 && this.state.player1.name && this.state.player1.name.length?this.state.player1.id:''}`})
-    players.push({label:`${this.state.player2 && this.state.player2.name && this.state.player2.name.length?this.state.player2.name:''}`,
-                  value:`${this.state.player2 && this.state.player2.name && this.state.player2.name.length?this.state.player2.id:''}`})
-    players.push({label:`${this.state.player3 && this.state.player3.name && this.state.player3.name.length?this.state.player3.name:''}`,
-                  value:`${this.state.player3 && this.state.player3.name && this.state.player3.name.length?this.state.player3.id:''}`})
-    players.push({label:`${this.state.player4 && this.state.player4.name && this.state.player4.name.length?this.state.player4.name:''}`,
-                  value:`${this.state.player4 && this.state.player4.name && this.state.player4.name.length?this.state.player4.id:''}`})
-    */
-    return getPlayerDetails()
-    .then((playerDetails) => {
-      players.push({label:`${playerDetails[0].name}`, value:`${playerDetails[0].id}`})
-      players.push({label:`${playerDetails[1].name}`, value:`${playerDetails[1].id}`})
-      players.push({label:`${playerDetails[2].name}`, value:`${playerDetails[2].id}`})
-      players.push({label:`${playerDetails[3].name}`, value:`${playerDetails[3].id}`})
-      return(players)
+      context.setState({playerDetails: playerDetails})
     })
   }
 
   _savePlayer(player, value) {
-    this.setState({[player]: value})
+    let active = true
+    const mins = moment(this.state.teeTime).format('mm')
+    const now = moment(new Date());
+    const diff = this.state.teeTime?Math.round(moment.duration(moment(this.state.teeTime, 'YYYY-MM-DD HH:mm').diff(now)).asSeconds()):-1
+
+    this.setState({[player]: value}, () => {
+      if ((this.state.player1 == -1 && this.state.player2 == -1 && this.state.player3 == -1 && this.state.player4 == -1 && value == -1) || (mins%10 != 0 || diff <= 0))
+        active = false
+      this.setState({scheduleButtonActive: active})
+    });
+  }
+
+  _setTeeTime(teeTime) {
+    let active = false
+    const mins = moment(teeTime).format('mm')
+    const now = moment(new Date());
+    const diff = Math.round(moment.duration(moment(teeTime, 'YYYY-MM-DD HH:mm').diff(now)).asSeconds())
+
+    if (mins%10 == 0 && diff  > 0)
+      active = true
+    this.setState({teeTime: teeTime, scheduleButtonActive: active})
   }
 
   render() {
-    let availablePlayers = []
-    this._availablePlayers()
-    .then((available) => {
-      console.log('available.... ', JSON.stringify(available));
-      availablePlayers = available
-    })
-
-    console.log('selectTeeTime render availablePlayers: ', JSON.stringify(availablePlayers));
     const config = {
       velocityThreshold: 0.2,
       directionalOffsetThreshold: 60
@@ -209,9 +164,8 @@ class SelectTeeTime extends Component {
                     dateInput: {
                       marginLeft: 36
                     }
-                    // ... You can check the source to find the other keys.
                   }}
-                  onDateChange={(date) => {this.setState({teeTime: date, scheduleButtonActive:true})}}
+                  onDateChange={this._setTeeTime.bind(this)}
                 />
               </View>
               <Text style={styles.heading}>
@@ -231,9 +185,9 @@ class SelectTeeTime extends Component {
                   >
                   <Picker.Item label="None" value="-1" />
                     {
-                      availablePlayers.map((p, i) => {
+                      this.state.playerDetails.map((p, i) => {
                         return(
-                            <Picker.Item key={i} label={p.label} value={p.value} />
+                            <Picker.Item key={i} label={p.name} value={p.id} />
                         )
                       })
                     }
@@ -253,13 +207,13 @@ class SelectTeeTime extends Component {
                     onValueChange={this._savePlayer.bind(this, 'player2')}
                   >
                     <Picker.Item label="None" value="-1" />
-                    {
-                      availablePlayers.map((p, i) => {
-                        return(
-                            <Picker.Item key={i} label={p.label} value={p.value} />
-                        )
-                      })
-                    }
+                      {
+                        this.state.playerDetails.map((p, i) => {
+                          return(
+                              <Picker.Item key={i} label={p.name} value={p.id} />
+                          )
+                        })
+                      }
                   </Picker>
                 </View>
               </View>
@@ -276,13 +230,13 @@ class SelectTeeTime extends Component {
                     onValueChange={this._savePlayer.bind(this, 'player3')}
                   >
                     <Picker.Item label="None" value="-1" />
-                    {
-                      availablePlayers.map((p, i) => {
-                        return(
-                            <Picker.Item key={i} label={p.label} value={p.value} />
-                        )
-                      })
-                    }
+                      {
+                        this.state.playerDetails.map((p, i) => {
+                          return(
+                              <Picker.Item key={i} label={p.name} value={p.id} />
+                          )
+                        })
+                      }
                   </Picker>
                 </View>
               </View>
@@ -299,13 +253,13 @@ class SelectTeeTime extends Component {
                     onValueChange={this._savePlayer.bind(this, 'player4')}
                   >
                     <Picker.Item label="None" value="-1" />
-                    {
-                      availablePlayers.map((p, i) => {
-                        return(
-                            <Picker.Item key={i} label={p.label} value={p.value} />
-                        )
-                      })
-                    }
+                      {
+                        this.state.playerDetails.map((p, i) => {
+                          return(
+                              <Picker.Item key={i} label={p.name} value={p.id} />
+                          )
+                        })
+                      }
                   </Picker>
                 </View>
               </View>

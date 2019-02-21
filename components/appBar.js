@@ -24,12 +24,10 @@ class AppBar extends Component {
   };
 
   showMenu = () => {
-    console.log('showMenu....');
     this._menu.show();
   };
 
   _menuLogout(navigator, url) {
-    console.log('_menuLogout');
     const context = this
     return getContactDetails()
       .then(function(response) {
@@ -46,7 +44,6 @@ class AppBar extends Component {
   }
 
   _menuPlayers() {
-    console.log('_menuPlayers');
     this.setState({
       showConfigPlayersModal: true
     })

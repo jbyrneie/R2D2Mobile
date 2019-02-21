@@ -126,7 +126,6 @@ _get_tee_time = function(response, time) {
 }
 
 _fillSlots = function(formData, freeSlots, player1UID, player2UID, player3UID, player4UID) {
-  console.log(`_fillSlots ${player1UID} ${player2UID} ${player3UID} ${player4UID}`);
   let playerUIDs = [player1UID?player1UID:null, player2UID?player2UID:null, player3UID?player3UID:null, player4UID?player4UID:null]
 
   for (var i = 0; i < freeSlots.length; i++) {
@@ -140,7 +139,6 @@ _fillSlots = function(formData, freeSlots, player1UID, player2UID, player3UID, p
       }
     }
   }
-  console.log('formData: ', formData);
   return formData
 }
 
@@ -153,7 +151,6 @@ _book_the_tee_time = function(bookingCode, phpsessid, freeSlots, teeTime, dateRe
   formData.append("bookingCode", bookingCode)
   _fillSlots(formData, freeSlots, player1UID, player2UID, player3UID, player4UID)
   //Jack
-  console.log('formData: ', formData);
   let data = {
     method: 'POST',
     headers: {
@@ -203,7 +200,6 @@ _book_the_tee_time_recursive = function(whatDate, time, dateComesAlive, phpsessi
           return _get_tee_time_page(nextDay, phpsessid)
           .then((response) => {
             if ((response._bodyInit.indexOf('To book a tee time') >= 0) || (response._bodyInit.indexOf('you have hit refresh too soon') >= 0))
-              // TODO console.log(`tee-time page found for ${whatDate}`);
               console.log('dummy refresh done....');
             return(_book_the_tee_time_recursive(whatDate, time, dateComesAlive, phpsessid, player1UID, player2UID, player3UID, player4UID, activity))
           })
@@ -290,7 +286,7 @@ exports.login = function(contactDetails, activity) {
       activity('Logging in to BRS')
       return({token: get_key_value('_csrf_token', response.data), phpsessid: getCookie('PHPSESSID', cookies)})
     } else {
-      console.log('Could find home page....');
+      console.log('Could NOT find home page....');
       throw new Error('Failed to login.....')
     }
   })

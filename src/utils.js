@@ -29,26 +29,6 @@ exports.get_key_value = function(key, stringData) {
   return value
 }
 
-exports.get_cookies1 = function(cookieString) {
-  let cookies = []
-  for (var i in cookieString) {
-    const cookie = new Cookie(cookieString[i]);
-
-    if (cookie.value != 'deleted')
-      cookies.push(cookie)
-  }
-  return cookies
-}
-
-exports.get_cookie1 = function(cookieName, cookies) {
-  let value = null
-  for (var i=0; i<cookies.length; i++)
-    if (cookies[i].key == cookieName)
-      return cookies[i].value
-
-  return null
-}
-
 _parseCookies = function (cookieString) {
 	var cookieData = cookieString.trim();
 
@@ -122,4 +102,8 @@ exports.savePlayerDetails = function(playerDetails) {
     .then(function(response) {
       return
     });
+};
+
+exports.clearPlayerDetails = function() {
+  AsyncStorage.removeItem('playerDetails')
 };

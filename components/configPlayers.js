@@ -16,6 +16,7 @@ class Players extends Component {
                    player2: {},
                    player3: {},
                    player4: {},
+                   updateButtonActive: false
                   };
   }
 
@@ -36,9 +37,10 @@ class Players extends Component {
   }
 
   _updatePlayer(player, attribute, value) {
+    console.log('updatePlayer.....');
     let thePlayer = this.state[player]
     thePlayer[attribute] = value
-    this.setState({[player]: thePlayer})
+    this.setState({[player]: thePlayer, updateButtonActive: this._playersConfigured()})
   }
 
   _savePlayers(event) {
@@ -66,20 +68,47 @@ class Players extends Component {
     else return false
   }
 
+  _playersConfigured() {
+    console.log(`_playersConfigured Player1 ${JSON.stringify(this.state.player1)} empty:${Object.keys(this.state.player1).length == 0} ${JSON.stringify(this.state.playerDetails)} playerDetails Empty: ${Object.keys(this.state.playerDetails).length == 0}`);
+    console.log(`_playersConfigured Player2 ${JSON.stringify(this.state.player2)} empty:${Object.keys(this.state.player2).length == 0} ${JSON.stringify(this.state.playerDetails)} playerDetails Empty: ${Object.keys(this.state.playerDetails).length == 0}`);
+    console.log(`_playersConfigured Player3 ${JSON.stringify(this.state.player3)} empty:${Object.keys(this.state.player3).length == 0} ${JSON.stringify(this.state.playerDetails)} playerDetails Empty: ${Object.keys(this.state.playerDetails).length == 0}`);
+    console.log(`_playersConfigured Player4 ${JSON.stringify(this.state.player4)} empty:${Object.keys(this.state.player4).length == 0} ${JSON.stringify(this.state.playerDetails)} playerDetails Empty: ${Object.keys(this.state.playerDetails).length == 0}`);
+
+/*
+    if ((
+          (Object.keys(this.state.player1).length == 0 && Object.keys(this.state.player2).length == 0 && Object.keys(this.state.player3).length == 0 && Object.keys(this.state.player4).length == 0) ||
+          (this.state.player1.name == 'Name' && this.state.player1.id == 'BRS ID' && this.state.player2.name == 'Name' && this.state.player2.id == 'BRS ID' && this.state.player3.name == 'Name' && this.state.player3.id == 'BRS ID' && this.state.player4.name == 'Name' && this.state.player4.id == 'BRS ID')
+        ) && (Object.keys(this.state.playerDetails).length == 0)
+       )
+       return false
+*/
+    if (Object.keys(this.state.player1).length == 0 && Object.keys(this.state.player2).length == 0 && Object.keys(this.state.player3).length == 0 && Object.keys(this.state.player4).length == 0)
+      return false
+    else if (this.state.player1.name == 'Name' && this.state.player1.id == 'BRS ID' && this.state.player2.name == 'Name' && this.state.player2.id == 'BRS ID' && this.state.player3.name == 'Name' && this.state.player3.id == 'BRS ID' && this.state.player4.name == 'Name' && this.state.player4.id == 'BRS ID')
+      return false
+    else if ((this.state.player1.name != 'Name' && this.state.player1.name.length > 0) && ((this.state.player1.id == 'BRS ID' || this.state.player1.id.length == 0)) ||
+             (this.state.player1.id != 'BRS ID' && this.state.player1.id.length > 0) && ((this.state.player1.name == 'Name' || this.state.player1.name.length == 0))
+            )
+      return false
+    else return true
+
+  }
+
   _getPlayers() {
     const context = this
     getPlayerDetails()
     .then((playerDetails) => {
-      context.setState({player1: playerDetails[0]&&playerDetails[0].id&&playerDetails[0].id.length>0?playerDetails[0]:{"name":"Name","id":"BRS ID"},
-                        player2: playerDetails[1]&&playerDetails[1].id&&playerDetails[1].id.length>0?playerDetails[1]:{"name":"Name","id":"BRS ID"},
-                        player3: playerDetails[2]&&playerDetails[2].id&&playerDetails[2].id.length>0?playerDetails[2]:{"name":"Name","id":"BRS ID"},
-                        player4: playerDetails[3]&&playerDetails[3].id&&playerDetails[3].id.length>0?playerDetails[3]:{"name":"Name","id":"BRS ID"},
+      context.setState({player1: playerDetails&&playerDetails[0]&&playerDetails[0].id&&playerDetails[0].id.length>0?playerDetails[0]:{"name":"Name","id":"BRS ID"},
+                        player2: playerDetails&&playerDetails[1]&&playerDetails[1].id&&playerDetails[1].id.length>0?playerDetails[1]:{"name":"Name","id":"BRS ID"},
+                        player3: playerDetails&&playerDetails[2]&&playerDetails[2].id&&playerDetails[2].id.length>0?playerDetails[2]:{"name":"Name","id":"BRS ID"},
+                        player4: playerDetails&&playerDetails[3]&&playerDetails[3].id&&playerDetails[3].id.length>0?playerDetails[3]:{"name":"Name","id":"BRS ID"},
                        })
     })
   }
 
   componentDidMount() {
     this._getPlayers()
+    this.setState({updateButtonActive: this._playersConfigured()})
   }
 
   componentWillUnmount() {
@@ -147,7 +176,9 @@ class Players extends Component {
               <View style={{marginTop:25}}>
                 <Button
                   onPress={this._savePlayers.bind(this)}>
-                  <Text style={styles.close_button}>UPDATE</Text>
+                  <Text style={[styles.update_button,
+                                this.state.updateButtonActive? styles.buttonActive: styles.buttonInActive
+                              ]}>UPDATE</Text>
                 </Button>
               </View>
             </View>
@@ -171,7 +202,7 @@ const styles = StyleSheet.create({
   bottomModal: {
     margin: 20,
   },
-  close_button: {
+  update_button: {
     fontFamily: GlobalStyles.font,
     fontSize: 13,
     borderRadius: 3,
@@ -182,6 +213,14 @@ const styles = StyleSheet.create({
     margin: 5,
     textAlign: 'center',
     overflow: 'hidden',
+  },
+  buttonActive: {
+    color: 'white',
+    backgroundColor: GlobalStyles.buttonPrimary,
+  },
+  buttonInActive: {
+    color: GlobalStyles.buttonPrimary,
+    backgroundColor: GlobalStyles.buttonInactive
   },
   heading: {
     fontFamily: GlobalStyles.font,

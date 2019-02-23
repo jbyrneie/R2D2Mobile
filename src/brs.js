@@ -150,7 +150,7 @@ _book_the_tee_time = function(bookingCode, phpsessid, freeSlots, teeTime, dateRe
   formData.append("TeeTime", `${teeTime}:00`)
   formData.append("bookingCode", bookingCode)
   _fillSlots(formData, freeSlots, player1UID, player2UID, player3UID, player4UID)
-  //Jack
+
   let data = {
     method: 'POST',
     headers: {
@@ -159,7 +159,7 @@ _book_the_tee_time = function(bookingCode, phpsessid, freeSlots, teeTime, dateRe
       'Cookie': `PHPSESSID=${phpsessid};`
     },
     credentials: 'include',
-    body: formDataxxx
+    body: formData
   }
 
   return fetch(BOOK_TEE_TIME, data)

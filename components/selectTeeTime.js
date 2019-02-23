@@ -28,7 +28,8 @@ class SelectTeeTime extends Component {
       player2: {},
       player3: {},
       player4: {},
-      showConfigPlayersModal: false
+      showConfigPlayersModal: false,
+      playerDetails: []
     };
   }
 
@@ -63,13 +64,14 @@ class SelectTeeTime extends Component {
     this.listener = EventRegister.addEventListener('playersUpdatedEvent', () => {
       getPlayerDetails()
       .then((playerDetails) => {
-        context.setState({playerDetails: playerDetails})
+        context.setState({playerDetails: playerDetails?playerDetails:[]})
       })
     })
 
     getPlayerDetails()
     .then((playerDetails) => {
-      context.setState({playerDetails: playerDetails})
+      console.log('playerDetails***** ', JSON.stringify(playerDetails), playerDetails?false:true);
+      context.setState({playerDetails: playerDetails?playerDetails:[], showConfigPlayersModal:playerDetails?false:true})
     })
   }
 
@@ -185,11 +187,14 @@ class SelectTeeTime extends Component {
                   >
                   <Picker.Item label="None" value="-1" />
                     {
+                      this.state.playerDetails?
                       this.state.playerDetails.map((p, i) => {
                         return(
                             <Picker.Item key={i} label={p.name} value={p.id} />
                         )
                       })
+                      :
+                      null
                     }
                   </Picker>
                 </View>
@@ -208,11 +213,14 @@ class SelectTeeTime extends Component {
                   >
                     <Picker.Item label="None" value="-1" />
                       {
+                        this.state.playerDetails?
                         this.state.playerDetails.map((p, i) => {
                           return(
                               <Picker.Item key={i} label={p.name} value={p.id} />
                           )
                         })
+                        :
+                        null
                       }
                   </Picker>
                 </View>
@@ -231,11 +239,14 @@ class SelectTeeTime extends Component {
                   >
                     <Picker.Item label="None" value="-1" />
                       {
+                        this.state.playerDetails?
                         this.state.playerDetails.map((p, i) => {
                           return(
                               <Picker.Item key={i} label={p.name} value={p.id} />
                           )
                         })
+                        :
+                        null
                       }
                   </Picker>
                 </View>
@@ -254,11 +265,14 @@ class SelectTeeTime extends Component {
                   >
                     <Picker.Item label="None" value="-1" />
                       {
+                        this.state.playerDetails?
                         this.state.playerDetails.map((p, i) => {
                           return(
                               <Picker.Item key={i} label={p.name} value={p.id} />
                           )
                         })
+                        :
+                        null
                       }
                   </Picker>
                 </View>

@@ -11,6 +11,7 @@ class Login extends Component {
     super(props);
     this.state = { username: '8-digit BRS code',
                    password: '',
+                   verified: false,
                    club: 'Club Name',
                    error: null,
                    spinner: false,
@@ -24,7 +25,7 @@ class Login extends Component {
     getContactDetails()
     .then((contactDetails) => {
       if (contactDetails)
-        context.setState({username: contactDetails.username, password: contactDetails.password, club: contactDetails.club})
+        context.setState({username: contactDetails.username, password: contactDetails.password, verified: contactDetails.verified, club: contactDetails.club})
     })
   }
 
@@ -49,6 +50,10 @@ class Login extends Component {
     this.setState({activity: activity})
   }
 
+  _enter(event) {
+    this.props.navigator.push({name: 'selectTeeTime', url: this.props.url})
+  }
+
   _next(event) {
     let activity = []
     const context = this
@@ -56,17 +61,12 @@ class Login extends Component {
     this.setState({spinner: true})
     login({username: this.state.username.trim(), password: this.state.password.trim(), club: this.state.club.trim().toLowerCase()}, this._logActivity.bind(this))
     .then((response) => {
-    context.setState({spinner: false})
+      context.setState({spinner: false})
       return saveContactDetails({username: this.state.username.trim(), password: this.state.password.trim(), club: this.state.club.trim().toLowerCase(), verified: response.status == 9?true:false})
       .then(() => {
-        return response
+        return(context.setState({verified: true}))
       })
-      return response
-    })
-    .then((response) => {
-      if (response.status == 9)
-        context.props.navigator.push({name: 'selectTeeTime', url: context.props.url});
-      else throw new Error('Failed to login.....')
+      return
     })
     .catch(function (err) {
       context.setState({spinner: false})
@@ -93,60 +93,83 @@ class Login extends Component {
           :
           null
           }
-          <View style={styles.input_wrapper}>
-            <TextInput
-              style={{color: '#FFF',
-                      height: 40,
-                      textAlign: 'center',
-                      fontFamily: GlobalStyles.font,
-                      borderBottomWidth: 1,
-                      borderBottomColor: '#696969'
-                    }}
-              onChangeText={(username) => this.setState({username})}
-              onFocus={this._resetUserName.bind(this)}
-              value={this.state.username}
-              underlineColorAndroid='transparent'
-            />
-          </View>
-          <View style={styles.input_wrapper}>
-            <TextInput
-              style={{color: '#FFF',
-                      height: 40,
-                      textAlign: 'center',
-                      fontFamily: GlobalStyles.font,
-                      borderBottomWidth: 1,
-                      borderBottomColor: '#696969'
-                    }}
-              onChangeText={(password) => this.setState({password})}
-              onFocus={this._resetPassword.bind(this)}
-              value={this.state.password}
-              secureTextEntry={true}
-              underlineColorAndroid='transparent'
-            />
-          </View>
-          <View style={styles.input_wrapper}>
-            <TextInput
-              style={{color: '#FFF',
-                      height: 40,
-                      textAlign: 'center',
-                      fontFamily: GlobalStyles.font,
-                      borderBottomWidth: 1,
-                      borderBottomColor: '#696969'
-                    }}
-              onChangeText={(club) => this.setState({club})}
-              onFocus={this._resetClub.bind(this)}
-              value={this.state.club}
-              underlineColorAndroid='transparent'
-            />
-          </View>
-          <View style={styles.footer}>
-            <Button
-              onPress={this._next.bind(this)}>
-              <Text style={[styles.next_button,
-                            this.state.nextButtonActive? styles.buttonActive: styles.buttonInActive
-                          ]}>VERIFY</Text>
-            </Button>
-          </View>
+          {this.state.verified ?
+            <View>
+              <View style={styles.input_wrapper}>
+                <Text style={styles.copy_body}>
+                  FORE. Select the Tee Time you want, pick your buddies, determine when the timesheet becomes available and
+                  R2D2 will do the rest for you
+                </Text>
+                <Text style={styles.register_body}>
+                  Enjoy your game
+                </Text>
+              </View>
+              <View style={styles.footer}>
+                <Button
+                  onPress={this._enter.bind(this)}>
+                  <Text style={[styles.next_button,styles.buttonActive
+                              ]}>ENTER</Text>
+                </Button>
+              </View>
+            </View>
+          :
+            <View>
+              <View style={styles.input_wrapper}>
+                <TextInput
+                  style={{color: '#FFF',
+                          height: 40,
+                          textAlign: 'center',
+                          fontFamily: GlobalStyles.font,
+                          borderBottomWidth: 1,
+                          borderBottomColor: '#696969'
+                        }}
+                  onChangeText={(username) => this.setState({username})}
+                  onFocus={this._resetUserName.bind(this)}
+                  value={this.state.username}
+                  underlineColorAndroid='transparent'
+                />
+              </View>
+              <View style={styles.input_wrapper}>
+                <TextInput
+                  style={{color: '#FFF',
+                          height: 40,
+                          textAlign: 'center',
+                          fontFamily: GlobalStyles.font,
+                          borderBottomWidth: 1,
+                          borderBottomColor: '#696969'
+                        }}
+                  onChangeText={(password) => this.setState({password})}
+                  onFocus={this._resetPassword.bind(this)}
+                  value={this.state.password}
+                  secureTextEntry={true}
+                  underlineColorAndroid='transparent'
+                />
+              </View>
+              <View style={styles.input_wrapper}>
+                <TextInput
+                  style={{color: '#FFF',
+                          height: 40,
+                          textAlign: 'center',
+                          fontFamily: GlobalStyles.font,
+                          borderBottomWidth: 1,
+                          borderBottomColor: '#696969'
+                        }}
+                  onChangeText={(club) => this.setState({club})}
+                  onFocus={this._resetClub.bind(this)}
+                  value={this.state.club}
+                  underlineColorAndroid='transparent'
+                />
+              </View>
+              <View style={styles.footer}>
+                <Button
+                  onPress={this._next.bind(this)}>
+                  <Text style={[styles.next_button,
+                                this.state.nextButtonActive? styles.buttonActive: styles.buttonInActive
+                              ]}>VERIFY</Text>
+                </Button>
+              </View>
+            </View>
+          }
           <Text style={styles.error}>{this.state.error != null?this.state.error:' '}</Text>
         </View>
       </View>
@@ -184,11 +207,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingBottom: 30
   },
+  copy_body: {
+    color: '#FFF',
+    fontSize: 16,
+    fontFamily: GlobalStyles.font,
+    lineHeight: 24,
+    paddingBottom: 5,
+    textAlign: 'center',
+    paddingBottom: 30
+  },
   logo_wrap: {
     alignItems: 'center',
     height: 220,
-    paddingBottom: 10,
-    marginBottom: 10,
     paddingLeft: 30,
     paddingRight: 30
   },

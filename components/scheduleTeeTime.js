@@ -88,7 +88,8 @@ class ScheduleTeeTime extends Component {
   _calculateSeconds(dateComesAlive) {
     const comesAlive = moment(dateComesAlive, 'YYYY-MM-DD HH:mm')
   	const now = moment(new Date());
-    return Math.round(moment.duration(comesAlive.diff(now)).asSeconds())
+    let seconds = Math.round(moment.duration(comesAlive.diff(now)).asSeconds())
+    return seconds>5?seconds-5:seconds  // Fire up with 5 secs to go
   }
 
   render() {

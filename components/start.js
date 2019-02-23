@@ -2,17 +2,18 @@
 import React, {Component} from 'react'
 import ReactNative, {AppRegistry, AppState, StyleSheet, View} from 'react-native'
 import {Navigator} from 'react-native-deprecated-custom-components'
-import {getContactDetails, clearContactDetails} from '../src/utils'
+import {getContactDetails, clearContactDetails, clearPlayerDetails} from '../src/utils'
 
 class Start extends Component {
   waitToInitialize = function() {
     if (this.props.navigator) {
       const context = this
       //clearContactDetails() // JUST for testing, ensures App starts at Login point
+      //clearPlayerDetails()
       return getContactDetails()
         .then(function(response) {
           const route = response && response.verified?'selectTeeTime':'login'
-          context.props.navigator.push({name: route, url: context.props.url});
+          context.props.navigator.push({name: 'login', url: context.props.url});
         });
     }
     else return setTimeout(this.waitToInitialize.bind(this), 10000)

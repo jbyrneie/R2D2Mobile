@@ -102,13 +102,21 @@ class Players extends Component {
                         player2: playerDetails&&playerDetails[1]&&playerDetails[1].id&&playerDetails[1].id.length>0?playerDetails[1]:{"name":"Name","id":"BRS ID"},
                         player3: playerDetails&&playerDetails[2]&&playerDetails[2].id&&playerDetails[2].id.length>0?playerDetails[2]:{"name":"Name","id":"BRS ID"},
                         player4: playerDetails&&playerDetails[3]&&playerDetails[3].id&&playerDetails[3].id.length>0?playerDetails[3]:{"name":"Name","id":"BRS ID"},
+                        updateButtonActive: this._playersConfigured()
                        })
     })
   }
 
-  componentDidMount() {
+  componentWillMount() {
+    /*
+    console.log('componentWillMount');
     this._getPlayers()
-    this.setState({updateButtonActive: this._playersConfigured()})
+    */
+  }
+
+  componentDidMount() {
+    console.log('componentDidMount');
+    this._getPlayers()
   }
 
   componentWillUnmount() {

@@ -5,6 +5,7 @@ import { GlobalStyles } from '../src/styles';
 import Icon from 'react-native-fa-icons';
 import ConfigPlayers from './configPlayers'
 import {getContactDetails, saveContactDetails} from '../src/utils'
+import { EventRegister } from 'react-native-event-listeners'
 
 class AppBar extends Component {
   constructor(props) {
@@ -53,6 +54,13 @@ class AppBar extends Component {
   _showConfigPlayersModal(showModal) {
     this.setState({
       showConfigPlayersModal: showModal
+    })
+  }
+
+  componentWillMount() {
+    const context = this
+    this.listener = EventRegister.addEventListener('showConfigPlayersModalEvent', () => {
+      context.setState({showConfigPlayersModal: true})
     })
   }
 

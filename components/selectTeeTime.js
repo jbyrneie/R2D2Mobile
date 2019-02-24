@@ -70,8 +70,14 @@ class SelectTeeTime extends Component {
 
     getPlayerDetails()
     .then((playerDetails) => {
-      console.log('playerDetails***** ', JSON.stringify(playerDetails), playerDetails?false:true);
-      context.setState({playerDetails: playerDetails?playerDetails:[], showConfigPlayersModal:playerDetails?false:true})
+      console.log('playerDetails: ', JSON.stringify(playerDetails));
+      if (!playerDetails ||
+        ((playerDetails[0] && playerDetails[0].name=='Name') &&
+         (playerDetails[1] && playerDetails[1].name=='Name') &&
+         (playerDetails[2] && playerDetails[2].name=='Name') &&
+         (playerDetails[3] && playerDetails[3].name=='Name')))
+        EventRegister.emit('showConfigPlayersModalEvent', '')
+      context.setState({playerDetails: playerDetails?playerDetails:[]})
     })
   }
 

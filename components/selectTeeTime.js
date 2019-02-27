@@ -81,28 +81,35 @@ class SelectTeeTime extends Component {
     })
   }
 
-  _savePlayer(player, value) {
+  _scheduleButtonActive() {
     let active = true
     const mins = moment(this.state.teeTime).format('mm')
     const now = moment(new Date());
     const diff = this.state.teeTime?Math.round(moment.duration(moment(this.state.teeTime, 'YYYY-MM-DD HH:mm').diff(now)).asSeconds()):-1
 
-    this.setState({[player]: value}, () => {
-      if ((this.state.player1 == -1 && this.state.player2 == -1 && this.state.player3 == -1 && this.state.player4 == -1 && value == -1) || (mins%10 != 0 || diff <= 0))
-        active = false
-      this.setState({scheduleButtonActive: active})
+    console.log('_scheduleButtonActive ', mins, diff);
+    if ((this.state.player1 == -1 && this.state.player2 == -1 && this.state.player3 == -1 && this.state.player4 == -1) ||
+        (mins%10 != 0 || diff <= 0)
+       )
+       active = false
+    console.log('_scheduleButtonActive: ', active);
+    return active
+  }
+
+  _savePlayer(player, value) {
+    console.log(`_savePlayer player: ${player} value: ${value} scheduleButtonActive ${this._scheduleButtonActive()}`);
+    this.setState({[player]: value}, function() {
+      console.log(`setting scheduleButtonActive: ${this._scheduleButtonActive()}`);
+      this.setState({scheduleButtonActive: this._scheduleButtonActive() && value != -1})
     });
   }
 
   _setTeeTime(teeTime) {
-    let active = false
-    const mins = moment(teeTime).format('mm')
-    const now = moment(new Date());
-    const diff = Math.round(moment.duration(moment(teeTime, 'YYYY-MM-DD HH:mm').diff(now)).asSeconds())
-
-    if (mins%10 == 0 && diff  > 0)
-      active = true
-    this.setState({teeTime: teeTime, scheduleButtonActive: active})
+    console.log(`_setTeeTime scheduleButtonActive ${this._scheduleButtonActive()} teeTime: ${teeTime}`);
+    this.setState({teeTime: teeTime}, function() {
+      console.log(`setting scheduleButtonActive: ${this._scheduleButtonActive()}`);
+      this.setState({scheduleButtonActive: this._scheduleButtonActive()})
+    })
   }
 
   render() {
@@ -110,6 +117,7 @@ class SelectTeeTime extends Component {
       velocityThreshold: 0.2,
       directionalOffsetThreshold: 60
     };
+    const menu = <Text>Hello</Text>
 
     return (
       <GestureRecognizer
@@ -147,7 +155,7 @@ class SelectTeeTime extends Component {
                       marginLeft: 36
                     }
                   }}
-                  onDateChange={(date) => {this.setState({dateAvailable: date, scheduleButtonActive:true})}}
+                  onDateChange={(date) => {this.setState({dateAvailable: date})}}
                 />
               </View>
               <Text style={styles.heading}>

@@ -74,7 +74,7 @@ class ScheduleTeeTime extends Component {
       return response
     })
     .then((response) => {
-      return(bookTeeTime(response.phpsessid, "2019-01-11 10:30:00", moment(this.state.teeTimeDetails.teeTime).format('YYYY-MM-DD'), moment(this.state.teeTimeDetails.teeTime).format('HH:mm'), this.state.teeTimeDetails.player1, this.state.teeTimeDetails.player2, this.state.teeTimeDetails.player3, this.state.teeTimeDetails.player4, this._logActivity.bind(this)))
+      return(bookTeeTime(response.phpsessid, this.state.teeTimeDetails.dateAvailable, moment(this.state.teeTimeDetails.teeTime).format('YYYY-MM-DD'), moment(this.state.teeTimeDetails.teeTime).format('HH:mm'), this.state.teeTimeDetails.player1, this.state.teeTimeDetails.player2, this.state.teeTimeDetails.player3, this.state.teeTimeDetails.player4, this._logActivity.bind(this)))
       .then((response) => {
         this.setState({done:true, booking:false})
       })

@@ -68,6 +68,14 @@ class SideMenu extends Component {
                   <Text style={{marginLeft:10, marginTop:3, marginBottom:20, fontSize:16}} onPress={this._menuLogout.bind(this)}>Logout</Text>
                 </View>
               </View>
+              <View style={{flexDirection:'row'}}>
+                <View style={{flex:.25}}>
+                  <Icon name="calendar" style={{marginLeft:20, marginTop:5, marginBottom:20, fontSize:18}} onPress={this.navigateToScreen('SelectTeeTime')}/>
+                </View>
+                <View style={{flex:.75}}>
+                  <Text style={{marginLeft:10, marginTop:3, marginBottom:20, fontSize:16}} onPress={this.navigateToScreen('SelectTeeTime')}>Tee Times</Text>
+                </View>
+              </View>
             </View>
           </View>
         </ScrollView>

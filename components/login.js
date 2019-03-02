@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { AppRegistry, TextInput, StyleSheet, Text, View, Image, Platform} from 'react-native';
+import { AppRegistry, TextInput, StyleSheet, Text, View, Image, Platform, TouchableOpacity} from 'react-native';
 import Button from 'react-native-button';
 import Spinner from './spinner';
 import { GlobalStyles } from '../src/styles';
@@ -106,7 +106,8 @@ class Login extends Component {
               </View>
               <View style={styles.footer}>
                 <Button
-                  onPress={this._enter.bind(this)}>
+                  onPress={() => this.props.navigation.navigate('SelectTeeTime')}
+                >
                   <Text style={[styles.next_button,styles.buttonActive
                               ]}>ENTER</Text>
                 </Button>
@@ -253,6 +254,24 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     paddingLeft: 15,
   },
+  text: {
+    color: 'white',
+    fontSize: 40,
+    fontWeight: 'bold',
+  },
+  button: {
+    position: 'absolute',
+    top: 50,
+    left: 0,
+    width: 150,
+    height: 50,
+    backgroundColor: '#f39c12',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  buttonText: {
+    color: 'white'
+  }
 });
 
 module.exports = Login;

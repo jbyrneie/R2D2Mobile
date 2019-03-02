@@ -1,6 +1,4 @@
-'use strict';
-import React from 'react'
-import {AppRegistry} from 'react-native'
-import R2D2 from './components'
+import { Drawer } from './components/navigators'
+import { AppRegistry } from 'react-native'
 
-AppRegistry.registerComponent('R2D2Mobile', () => R2D2);
+AppRegistry.registerComponent('R2D2', () => Drawer );

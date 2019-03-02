@@ -124,6 +124,7 @@ class Players extends Component {
   }
 
   render () {
+    console.log('PlayersConfig..... isVisible: ', this.props.visible);
     const player1 = this.state.player1
     const player2 = this.state.player2
     const player3 = this.state.player3
@@ -131,7 +132,7 @@ class Players extends Component {
 
     return (
       <View style={styles.container}>
-        <Modal style={styles.bottomModal} isVisible={this.props.visible} onRequestClose={this._cancel.bind(this)}>
+        <Modal style={styles.bottomModal} isVisible={true} onRequestClose={this._cancel.bind(this)}>
           <View style={styles.modalContent}>
             <View>
               <Text style={styles.heading}>

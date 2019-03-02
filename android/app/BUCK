@@ -45,12 +45,12 @@ android_library(
 
 android_build_config(
     name = "build_config",
-    package = "com.R2D2Mobile",
+    package = "com.R2D2",
 )
 
 android_resource(
     name = "res",
-    package = "com.R2D2Mobile",
+    package = "com.R2D2",
     res = "src/main/res",
 )
 

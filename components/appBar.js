@@ -39,7 +39,7 @@ class AppBar extends Component {
         return saveContactDetails(response)
           .then(function(response) {
             context._menu.hide();
-            navigator.push({name: 'login', url: url});
+            context.props.navigation.navigate('Login')
           })
       });
   }
@@ -68,35 +68,10 @@ class AppBar extends Component {
     return (
       <View>
         <View style={styles.header}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <View style={{flex:.75}}>
-              <Text style={styles.page_title}>
-                {Platform.OS === 'ios'?<Icon name='chevron-left' style={styles.ios_icon}/>:null}
-                {this.props.bannerText}
-              </Text>
-            </View>
-            <View style={{flex:.25, alignItems: 'center', justifyContent: 'center'}}>
-              <TouchableWithoutFeedback onPress={this.showMenu}>
-                <View>
-                  <Icon name='ellipsis-v' style={styles.ios_icon}/>
-                </View>
-              </TouchableWithoutFeedback>
-              <Menu
-                ref={this.setMenuRef}
-                button={<Text></Text>}
-              >
-                <MenuItem onPress={this._menuPlayers.bind(this)}>Players</MenuItem>
-                <MenuItem onPress={this._menuLogout.bind(this, this.props.navigator, this.props.url)}>Logout</MenuItem>
-              </Menu>
-            </View>
-          </View>
-        </View>
-        <View>
-          <ConfigPlayers
-            visible={this.state.showConfigPlayersModal}
-            showModal={this._showConfigPlayersModal.bind(this)}
-            navigator={this.props.navigator}
-          />
+          <Text style={styles.page_title}>
+            {Platform.OS === 'ios'?<Icon name='chevron-left' style={styles.ios_icon}/>:null}
+            {this.props.bannerText}
+          </Text>
         </View>
       </View>
     );

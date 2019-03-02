@@ -44,7 +44,7 @@ class SelectTeeTime extends Component {
                           player4: this.state.player4?this.state.player4:-1
                         })
       .then(() => {
-        context.props.navigator.push({name: 'scheduleTeeTime', url: context.props.url});
+        this.props.navigation.navigate('ScheduleTeeTime')
       })
     }
   }
@@ -54,6 +54,7 @@ class SelectTeeTime extends Component {
   }
 
   _showConfigPlayersModal(showModal) {
+    console.log('_showConfigPlayersModal: ', showModal);
     this.setState({
       showConfigPlayersModal: showModal
     })
@@ -61,6 +62,25 @@ class SelectTeeTime extends Component {
 
   componentWillMount() {
     const context = this
+    this.listener = EventRegister.addEventListener('showConfigPlayersModalEvent', () => {
+      console.log('selecTeeTime showConfigPlayersModalEvent');
+      context.setState({showConfigPlayersModal: true})
+    })
+    this.listener = EventRegister.addEventListener('playersUpdatedEvent', () => {
+      getPlayerDetails()
+      .then((playerDetails) => {
+        context.setState({playerDetails: playerDetails?playerDetails:[]})
+      })
+    })
+  }
+
+  componentWillMount() {
+    const context = this
+
+    this.listener = EventRegister.addEventListener('showConfigPlayersModalEvent', () => {
+      console.log('selecTeeTime showConfigPlayersModalEvent');
+      context.setState({showConfigPlayersModal: true})
+    })
     this.listener = EventRegister.addEventListener('playersUpdatedEvent', () => {
       getPlayerDetails()
       .then((playerDetails) => {
@@ -71,12 +91,14 @@ class SelectTeeTime extends Component {
     getPlayerDetails()
     .then((playerDetails) => {
       console.log('playerDetails: ', JSON.stringify(playerDetails));
+      /*
       if (!playerDetails ||
         ((playerDetails[0] && playerDetails[0].name=='Name') &&
          (playerDetails[1] && playerDetails[1].name=='Name') &&
          (playerDetails[2] && playerDetails[2].name=='Name') &&
          (playerDetails[3] && playerDetails[3].name=='Name')))
         EventRegister.emit('showConfigPlayersModalEvent', '')
+      */
       context.setState({playerDetails: playerDetails?playerDetails:[]})
     })
   }
@@ -113,6 +135,7 @@ class SelectTeeTime extends Component {
   }
 
   render() {
+    console.log('SelectTeeTime render: ', this.state.showConfigPlayersModal);
     const config = {
       velocityThreshold: 0.2,
       directionalOffsetThreshold: 60
@@ -301,11 +324,11 @@ class SelectTeeTime extends Component {
               </Button>
             </View>
             <View>
-              <ConfigPlayers
-                visible={this.state.showConfigPlayersModal}
-                showModal={this._showConfigPlayersModal.bind(this)}
-                navigator={this.props.navigator}
-              />
+              {this.state.showConfigPlayersModal?
+                <ConfigPlayers showModal={this._showConfigPlayersModal.bind(this)}/>
+              :
+              null
+              }
             </View>
           </View>
       </GestureRecognizer>

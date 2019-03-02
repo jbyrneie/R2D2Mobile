@@ -23,7 +23,8 @@ class ScheduleTeeTime extends Component {
       teeTimeDetails: {},
       activity: [],
       done: false,
-      booking: false
+      booking: false,
+      showConfigPlayersModal: false,
     };
   }
 
@@ -56,7 +57,7 @@ class ScheduleTeeTime extends Component {
 
   _done() {
     if (!this.state.booking)
-      this.props.navigator.push({name: 'selectTeeTime', url: this.props.url});
+      this.props.navigation.navigate('SelectTeeTime')
   }
 
   _logActivity(message) {
@@ -90,6 +91,13 @@ class ScheduleTeeTime extends Component {
   	const now = moment(new Date());
     let seconds = Math.round(moment.duration(comesAlive.diff(now)).asSeconds())
     return seconds>5?seconds-5:seconds  // Fire up with 5 secs to go
+  }
+
+  _showConfigPlayersModal(showModal) {
+    console.log('_showConfigPlayersModal: ', showModal);
+    this.setState({
+      showConfigPlayersModal: showModal
+    })
   }
 
   render() {
@@ -140,6 +148,13 @@ class ScheduleTeeTime extends Component {
                 onPress={this._done.bind(this)}>
                 <Text style={[styles.schedule_button,styles.buttonActive]}>{this.state.done?'DONE':'STOP'}</Text>
               </Button>
+            }
+          </View>
+          <View>
+            {this.state.showConfigPlayersModal?
+              <ConfigPlayers showModal={this._showConfigPlayersModal.bind(this)}/>
+            :
+            null
             }
           </View>
         </View>

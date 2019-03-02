@@ -11,8 +11,6 @@ import sideMenu from './sideMenu'
 // Navigators
 import { DrawerNavigator } from 'react-navigation'
 
-
-// Plain old component
 import login from './login'
 import selectTeeTime from './selectTeeTime'
 import scheduleTeeTime from './scheduleTeeTime'

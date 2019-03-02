@@ -4,8 +4,6 @@ import React, {Component} from 'react';
 import { GlobalStyles } from '../src/styles';
 import {NavigationActions} from 'react-navigation';
 import Icon from 'react-native-fa-icons';
-//import { Icon } from 'react-native-elements'
-//import FontAwesome, { Icons } from 'react-native-fontawesome';
 import {ScrollView, Text, View, StyleSheet} from 'react-native';
 import { EventRegister } from 'react-native-event-listeners'
 import { StackNavigator } from 'react-navigation';
@@ -55,20 +53,20 @@ class SideMenu extends Component {
             <Text style={styles.sectionHeadingStyle}>
             </Text>
             <View style={styles.navSectionStyle}>
-              <View style={{flexDirection: 'row'}} >
-                <View style={{flex:.25}}>
-                  <Icon name="chevron-left" onPress={this._configPlayers.bind(this)}/>
-                </View>
-                <View style={{flex:.75}}>
-                  <Text onPress={this._configPlayers.bind(this)}>Config Players</Text>
-                </View>
-              </View>
               <View style={{flexDirection: 'row'}}>
                 <View style={{flex:.25}}>
-                  <Icon name="chevron-left" onPress={this._menuLogout.bind(this)}/>
+                  <Icon name="cog" style={{marginLeft:20, marginTop:20, marginBottom:20, fontSize:18}} onPress={this._configPlayers.bind(this)}/>
                 </View>
                 <View style={{flex:.75}}>
-                  <Text onPress={this._menuLogout.bind(this)}>Logout</Text>
+                  <Text style={{marginLeft:10, marginTop:18, marginBottom:20, fontSize:16}} onPress={this._configPlayers.bind(this)}>Config Players</Text>
+                </View>
+              </View>
+              <View style={{flexDirection:'row'}}>
+                <View style={{flex:.25}}>
+                  <Icon name="key" style={{marginLeft:20, marginTop:5, marginBottom:20, fontSize:18}} onPress={this._menuLogout.bind(this)}/>
+                </View>
+                <View style={{flex:.75}}>
+                  <Text style={{marginLeft:10, marginTop:3, marginBottom:20, fontSize:16}} onPress={this._menuLogout.bind(this)}>Logout</Text>
                 </View>
               </View>
             </View>
@@ -77,10 +75,10 @@ class SideMenu extends Component {
         <View style={styles.footerContainer}>
           <View style={{flexDirection: 'row'}} onPress={this.navigateToScreen('About')}>
             <View style={{flex:.25}}>
-              <Icon name="chevron-left" />
+              <Icon name="info" style={{marginLeft:20, marginTop:20, marginBottom:20, fontSize:18}}/>
             </View>
             <View style={{flex:.75}}>
-              <Text>About</Text>
+              <Text style={{marginLeft:10, marginTop:18, marginBottom:20, fontSize:16}}>About!</Text>
             </View>
           </View>
         </View>

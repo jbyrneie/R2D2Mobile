@@ -12,16 +12,15 @@ class AppBar extends Component {
       <View>
         <View style={styles.header}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <View style={{flex:.25, alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+            <View style={{flex:.25}}>
               <TouchableOpacity onPress={() => this.props.navigation.navigate('DrawerOpen')}>
                 <View>
                   <Icon name='ellipsis-v' style={styles.ios_icon}/>
                 </View>
               </TouchableOpacity>
             </View>
-            <View style={{flex:.75, alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+            <View style={{flex:.75}}>
               <Text style={styles.page_title}>
-                {Platform.OS === 'ios'?<Icon name='chevron-left' style={styles.ios_icon}/>:null}
                 {this.props.bannerText}
               </Text>
             </View>
@@ -34,7 +33,7 @@ class AppBar extends Component {
 
 const styles = StyleSheet.create({
   header: {
-    paddingLeft: 20,
+    paddingLeft: 5,
     paddingRight: 20,
     backgroundColor: GlobalStyles.brandPrimary,
   },
@@ -49,8 +48,8 @@ const styles = StyleSheet.create({
   ios_icon: {
     fontSize: 18,
     color: '#FFFFFF',
-    marginLeft: 40,
-    marginTop: 10
+    marginLeft: 15,
+    marginTop: 3
   },
 });
 

@@ -11,6 +11,7 @@ import sideMenu from './sideMenu'
 // Navigators
 import { DrawerNavigator } from 'react-navigation'
 
+import about from './about'
 import login from './login'
 import selectTeeTime from './selectTeeTime'
 import scheduleTeeTime from './scheduleTeeTime'
@@ -19,7 +20,8 @@ export const Drawer = DrawerNavigator(
   {
     Login: { screen: login },
     SelectTeeTime: { screen: selectTeeTime },
-    ScheduleTeeTime: { screen: scheduleTeeTime }
+    ScheduleTeeTime: { screen: scheduleTeeTime },
+    About: { screen: about }
   },
   {
     contentComponent: sideMenu,

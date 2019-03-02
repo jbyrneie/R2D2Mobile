@@ -72,12 +72,12 @@ class SideMenu extends Component {
           </View>
         </ScrollView>
         <View style={styles.footerContainer}>
-          <View style={{flexDirection: 'row'}} onPress={this.navigateToScreen('About')}>
+          <View style={{flexDirection: 'row'}}>
             <View style={{flex:.25}}>
-              <Icon name="info" style={{marginLeft:20, marginTop:20, marginBottom:20, fontSize:18}}/>
+              <Icon name="info" style={{marginLeft:20, marginTop:20, marginBottom:20, fontSize:18}} onPress={this.navigateToScreen('About')}/>
             </View>
             <View style={{flex:.75}}>
-              <Text style={{marginLeft:10, marginTop:18, marginBottom:20, fontSize:16}}>About!</Text>
+              <Text style={{marginLeft:10, marginTop:18, marginBottom:20, fontSize:16}} onPress={this.navigateToScreen('About')}>About</Text>
             </View>
           </View>
         </View>

@@ -10,7 +10,6 @@ class AppSpinner extends Component {
           visible={true}
           overlayColor={'rgba(0, 0, 0, 0.80)'}
           textContent={this.props.message}
-          textStyle={styles.spinnerTextStyle}
         />
       </View>
     );

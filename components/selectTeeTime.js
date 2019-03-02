@@ -10,7 +10,6 @@ import Icon from 'react-native-fa-icons';
 import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 import DatePicker from 'react-native-datepicker'
 import {getPlayerDetails, saveTeeTimeDetails} from '../src/utils'
-import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 import AppBar from './appBar'
 import ConfigPlayers from './configPlayers'
 import { EventRegister } from 'react-native-event-listeners'

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 import { GlobalStyles } from '../src/styles';
 import Icon from 'react-native-fa-icons';
 import ConfigPlayers from './configPlayers'

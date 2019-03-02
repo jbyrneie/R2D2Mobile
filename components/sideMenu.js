@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-//import styles from './sideMenu.style';
 import { GlobalStyles } from '../src/styles';
 import {NavigationActions} from 'react-navigation';
 import Icon from 'react-native-fa-icons';

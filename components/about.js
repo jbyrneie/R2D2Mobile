@@ -9,7 +9,7 @@ class About extends Component {
       <View style={styles.container}>
         <AppBar bannerText='About' navigation={this.props.navigation}/>
         <View style={styles.body}>
-          <Text style={styles.heading, styles.text}>
+          <Text style={[styles.heading, styles.text]}>
             About R2D2
           </Text>
           <Text style={styles.text}>
@@ -44,7 +44,8 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: GlobalStyles.font,
     fontSize: 16,
-    lineHeight: 20
+    lineHeight: 20,
+    paddingBottom: 10,
   },
 });
 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { AppRegistry, TextInput, StyleSheet, Text, View, Image, Platform, TouchableOpacity} from 'react-native';
+import {TextInput, StyleSheet, Text, View, Image} from 'react-native';
 import Button from 'react-native-button';
 import Spinner from './spinner';
 import { GlobalStyles } from '../src/styles';

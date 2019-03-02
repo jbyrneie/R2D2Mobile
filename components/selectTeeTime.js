@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
-import { Text,View, ScrollView, StyleSheet, TouchableHighlight, Image, StatusBar, BackHandler, Platform, Picker, Alert, YellowBox} from 'react-native';
+import { Text, View, StyleSheet, StatusBar, Picker} from 'react-native';
 import Button from 'react-native-button';
-import CountDown from 'react-native-countdown-component';
 import { GlobalStyles } from '../src/styles';
 import _ from 'lodash'
 import moment from 'moment'
-import momenttz from 'moment-timezone'
 import Icon from 'react-native-fa-icons';
-import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
+import GestureRecognizer from 'react-native-swipe-gestures';
 import DatePicker from 'react-native-datepicker'
 import {getPlayerDetails, saveTeeTimeDetails} from '../src/utils'
 import AppBar from './appBar'
@@ -403,12 +401,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 175,
     paddingTop: 80,
-  },
-  image: {
-    resizeMode: 'contain',
-    height: 100,
-    width: 100,
-    opacity: .25
   },
   no_schedule:{
     fontFamily: GlobalStyles.font,

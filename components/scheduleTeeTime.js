@@ -1,18 +1,14 @@
 import React, { Component } from 'react';
-import { Text,View, ScrollView, StyleSheet, TouchableHighlight, Image, StatusBar, BackHandler, Platform, Picker} from 'react-native';
+import { Text, View, ScrollView, StyleSheet, StatusBar, BackHandler} from 'react-native';
 import Button from 'react-native-button';
 import CountDown from 'react-native-countdown-component';
 import { GlobalStyles } from '../src/styles';
 import _ from 'lodash'
 import moment from 'moment'
-import momenttz from 'moment-timezone'
-import Icon from 'react-native-fa-icons';
-import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
-import DatePicker from 'react-native-datepicker'
-import {getContactDetails, getTeeTimeDetails, getCookie, get_key_value} from '../src/utils'
+import GestureRecognizer from 'react-native-swipe-gestures';
+import {getContactDetails, getTeeTimeDetails} from '../src/utils'
 import {login, bookTeeTime} from '../src/brs'
 import AppBar from './appBar'
-import axios from 'axios'
 
 class ScheduleTeeTime extends Component {
   constructor(props) {
@@ -117,7 +113,7 @@ class ScheduleTeeTime extends Component {
           >
         <StatusBar barStyle = "light-content" hidden = {false}/>
         <View style={styles.container}>
-          <AppBar bannerText='Scheduling a Tee Time' navigator={this.props.navigator} url={this.props.url}/>
+          <AppBar bannerText='Scheduling a Tee Time' navigation={this.props.navigation} url={this.props.url}/>
           <View style={styles.body}>
             <Text style={styles.heading}>
               Countdown to Tee Time Booking
@@ -218,11 +214,6 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     paddingTop: 30,
     paddingBottom: 30
-  },
-  ios_icon: {
-    fontSize: 18,
-    color: '#FFFFFF',
-    marginRight: 50,
   },
   time: {
     color: GlobalStyles.headlineColor,

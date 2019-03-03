@@ -7,8 +7,16 @@ import {ScrollView, Text, View, StyleSheet} from 'react-native';
 import { EventRegister } from 'react-native-event-listeners'
 import { StackNavigator } from 'react-navigation';
 import {getContactDetails, saveContactDetails} from '../src/utils'
+import ConfigPlayers from './configPlayers'
 
 class SideMenu extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      showConfigPlayersModal: false
+    };
+  }
+
   navigateToScreen = (route) => () => {
     console.log('navigateToScreen: ', route);
     const navigateAction = NavigationActions.navigate({
@@ -17,11 +25,13 @@ class SideMenu extends Component {
     this.props.navigation.dispatch(navigateAction);
   }
 
+/*
   _configPlayers() {
     console.log('_configPlayers');
     EventRegister.emit('showConfigPlayersModalEvent', '')
     this.props.navigation.navigate('DrawerClose')
   }
+*/
 
   _menuLogout() {
     console.log('_menuLogout...');
@@ -40,6 +50,14 @@ class SideMenu extends Component {
       });
   }
 
+  _showConfigPlayersModal(showModal) {
+    console.log('_showConfigPlayersModal: ', showModal);
+    this.setState({
+      showConfigPlayersModal: showModal
+    })
+    this.props.navigation.navigate('DrawerClose')
+  }
+
   render () {
     const configPlayers = 'Config Players'
     const logout = 'Logout'
@@ -54,10 +72,10 @@ class SideMenu extends Component {
             <View style={styles.navSectionStyle}>
               <View style={{flexDirection: 'row'}}>
                 <View style={{flex:.25}}>
-                  <Icon name="cog" style={{marginLeft:20, marginTop:20, marginBottom:20, fontSize:18}} onPress={this._configPlayers.bind(this)}/>
+                  <Icon name="cog" style={{marginLeft:20, marginTop:20, marginBottom:20, fontSize:18}} onPress={this._showConfigPlayersModal.bind(this, true)}/>
                 </View>
                 <View style={{flex:.75}}>
-                  <Text style={{marginLeft:10, marginTop:18, marginBottom:20, fontSize:16}} onPress={this._configPlayers.bind(this)}>Config Players</Text>
+                  <Text style={{marginLeft:10, marginTop:18, marginBottom:20, fontSize:16}} onPress={this._showConfigPlayersModal.bind(this, true)}>Config Players</Text>
                 </View>
               </View>
               <View style={{flexDirection:'row'}}>
@@ -89,6 +107,13 @@ class SideMenu extends Component {
             </View>
           </View>
         </View>
+        {this.state.showConfigPlayersModal?
+          <View>
+            <ConfigPlayers showModal={this._showConfigPlayersModal.bind(this)}/>
+          </View>
+          :
+          null
+        }
       </View>
     );
   }

@@ -25,7 +25,6 @@ class SelectTeeTime extends Component {
       player2: {},
       player3: {},
       player4: {},
-      showConfigPlayersModal: false,
       playerDetails: []
     };
   }
@@ -50,34 +49,9 @@ class SelectTeeTime extends Component {
     this.props.navigator.pop();
   }
 
-  _showConfigPlayersModal(showModal) {
-    console.log('_showConfigPlayersModal: ', showModal);
-    this.setState({
-      showConfigPlayersModal: showModal
-    })
-  }
-
-  componentWillMount() {
-    const context = this
-    this.listener = EventRegister.addEventListener('showConfigPlayersModalEvent', () => {
-      console.log('selecTeeTime showConfigPlayersModalEvent');
-      context.setState({showConfigPlayersModal: true})
-    })
-    this.listener = EventRegister.addEventListener('playersUpdatedEvent', () => {
-      getPlayerDetails()
-      .then((playerDetails) => {
-        context.setState({playerDetails: playerDetails?playerDetails:[]})
-      })
-    })
-  }
-
   componentWillMount() {
     const context = this
 
-    this.listener = EventRegister.addEventListener('showConfigPlayersModalEvent', () => {
-      console.log('selecTeeTime showConfigPlayersModalEvent');
-      context.setState({showConfigPlayersModal: true})
-    })
     this.listener = EventRegister.addEventListener('playersUpdatedEvent', () => {
       getPlayerDetails()
       .then((playerDetails) => {
@@ -132,7 +106,7 @@ class SelectTeeTime extends Component {
   }
 
   render() {
-    console.log('SelectTeeTime render: ', this.state.showConfigPlayersModal);
+    console.log('SelectTeeTime render: ');
     const config = {
       velocityThreshold: 0.2,
       directionalOffsetThreshold: 60
@@ -319,13 +293,6 @@ class SelectTeeTime extends Component {
                               this.state.scheduleButtonActive? styles.buttonActive: styles.buttonInActive
                             ]}>SCHEDULE TEE TIME</Text>
               </Button>
-            </View>
-            <View>
-              {this.state.showConfigPlayersModal?
-                <ConfigPlayers showModal={this._showConfigPlayersModal.bind(this)}/>
-              :
-              null
-              }
             </View>
           </View>
       </GestureRecognizer>

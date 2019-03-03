@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { GlobalStyles } from '../src/styles';
 import Icon from 'react-native-fa-icons';
-import ConfigPlayers from './configPlayers'
 import {getContactDetails, saveContactDetails} from '../src/utils'
 import { EventRegister } from 'react-native-event-listeners'
 
 class AppBar extends Component {
+  componentDidMount() {
+  }
+
   render() {
     return (
       <View>

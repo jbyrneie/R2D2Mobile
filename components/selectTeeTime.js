@@ -49,9 +49,9 @@ class SelectTeeTime extends Component {
     this.props.navigator.pop();
   }
 
-  componentWillMount() {
-    const context = this
 
+  componentDidMount() {
+    const context = this
     this.listener = EventRegister.addEventListener('playersUpdatedEvent', () => {
       getPlayerDetails()
       .then((playerDetails) => {
@@ -62,16 +62,12 @@ class SelectTeeTime extends Component {
     getPlayerDetails()
     .then((playerDetails) => {
       console.log('playerDetails: ', JSON.stringify(playerDetails));
-      /*
-      if (!playerDetails ||
-        ((playerDetails[0] && playerDetails[0].name=='Name') &&
-         (playerDetails[1] && playerDetails[1].name=='Name') &&
-         (playerDetails[2] && playerDetails[2].name=='Name') &&
-         (playerDetails[3] && playerDetails[3].name=='Name')))
-        EventRegister.emit('showConfigPlayersModalEvent', '')
-      */
       context.setState({playerDetails: playerDetails?playerDetails:[]})
     })
+  }
+
+  componentWillUnmount() {
+    EventRegister.removeEventListener(this.listener)
   }
 
   _scheduleButtonActive() {
@@ -123,7 +119,7 @@ class SelectTeeTime extends Component {
           }}
           >
         <StatusBar barStyle = "light-content" hidden = {false}/>
-          <View style={styles.container}>
+        <View style={styles.container}>
             <AppBar bannerText='Pick a Tee Time' navigation={this.props.navigation} url={this.props.url}/>
             <View style={styles.body}>
               <Text style={styles.heading}>

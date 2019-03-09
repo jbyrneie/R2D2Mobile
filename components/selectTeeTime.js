@@ -45,11 +45,6 @@ class SelectTeeTime extends Component {
     }
   }
 
-  _onSwipeLeftRight(gestureState) {
-    this.props.navigator.pop();
-  }
-
-
   componentDidMount() {
     const context = this
     this.listener = EventRegister.addEventListener('playersUpdatedEvent', () => {
@@ -107,12 +102,9 @@ class SelectTeeTime extends Component {
       velocityThreshold: 0.2,
       directionalOffsetThreshold: 60
     };
-    const menu = <Text>Hello</Text>
-
+    
     return (
       <GestureRecognizer
-          onSwipeRight={this._onSwipeLeftRight.bind(this)}
-          onSwipeLeft={this._onSwipeLeftRight.bind(this)}
           config={config}
           style={{
             flex: 1

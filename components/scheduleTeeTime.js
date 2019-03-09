@@ -24,15 +24,6 @@ class ScheduleTeeTime extends Component {
     };
   }
 
-  _onSwipeLeftRight(gestureState) {
-    this.props.navigator.pop();
-  }
-
-  _goBack() {
-    this.props.navigator.pop()
-    return true
-  }
-
   componentWillMount() {
     const context = this
     getContactDetails()
@@ -43,12 +34,6 @@ class ScheduleTeeTime extends Component {
         context.setState({teeTimeDetails: teeTimeDetails})
       })
     })
-
-    BackHandler.addEventListener('hardwareBackPress', this._goBack.bind(this));
-  }
-
-  componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this._goBack.bind(this));
   }
 
   _done() {
@@ -71,6 +56,7 @@ class ScheduleTeeTime extends Component {
       return response
     })
     .then((response) => {
+      console.log('_timerFinished....');
       return(bookTeeTime(response.phpsessid, this.state.teeTimeDetails.dateAvailable, moment(this.state.teeTimeDetails.teeTime).format('YYYY-MM-DD'), moment(this.state.teeTimeDetails.teeTime).format('HH:mm'), this.state.teeTimeDetails.player1, this.state.teeTimeDetails.player2, this.state.teeTimeDetails.player3, this.state.teeTimeDetails.player4, this._logActivity.bind(this), this.state.contactDetails))
       .then((response) => {
         this.setState({done:true, booking:false})
@@ -104,8 +90,6 @@ class ScheduleTeeTime extends Component {
 
     return (
       <GestureRecognizer
-          onSwipeRight={this._onSwipeLeftRight.bind(this)}
-          onSwipeLeft={this._onSwipeLeftRight.bind(this)}
           config={config}
           style={{
             flex: 1

@@ -36,6 +36,12 @@ class Players extends Component {
     }
   }
 
+  _hasDuplicates = function(array) {
+    return array.some(function(value) {                            // .some will break as soon as duplicate found (no need to itterate over all array)
+       return array.indexOf(value) !== array.lastIndexOf(value);   // comparing first and last indexes of the same value
+    })
+  }
+
   _updatePlayer(player, attribute, value) {
     console.log('updatePlayer.....');
     let thePlayer = this.state[player]
@@ -60,14 +66,6 @@ class Players extends Component {
     this.props.showModal(false)
   }
 
-  _goBack() {
-    if (this.state.showDeclineReasonModal) {
-      this.setState({showDeclineReasonModal: false})
-      return true
-    }
-    else return false
-  }
-
   _playersConfigured() {
     console.log(`_playersConfigured Player1 ${JSON.stringify(this.state.player1)} empty:${Object.keys(this.state.player1).length == 0} ${JSON.stringify(this.state.playerDetails)} playerDetails Empty: ${Object.keys(this.state.playerDetails).length == 0}`);
     console.log(`_playersConfigured Player2 ${JSON.stringify(this.state.player2)} empty:${Object.keys(this.state.player2).length == 0} ${JSON.stringify(this.state.playerDetails)} playerDetails Empty: ${Object.keys(this.state.playerDetails).length == 0}`);
@@ -87,7 +85,7 @@ class Players extends Component {
     else if (this.state.player1.name == 'Name' && this.state.player1.id == 'BRS ID' && this.state.player2.name == 'Name' && this.state.player2.id == 'BRS ID' && this.state.player3.name == 'Name' && this.state.player3.id == 'BRS ID' && this.state.player4.name == 'Name' && this.state.player4.id == 'BRS ID')
       return false
     else if ((this.state.player1.name != 'Name' && this.state.player1.name.length > 0) && ((this.state.player1.id == 'BRS ID' || this.state.player1.id.length == 0)) ||
-             (this.state.player1.id != 'BRS ID' && this.state.player1.id.length > 0) && ((this.state.player1.name == 'Name' || this.state.player1.name.length == 0))
+             ((this.state.player1.id != 'BRS ID' && this.state.player1.id.length > 0) && (this.state.player1.name == 'Name' || this.state.player1.name.length == 0))
             )
       return false
     else return true
@@ -107,20 +105,9 @@ class Players extends Component {
     })
   }
 
-  componentWillMount() {
-    /*
-    console.log('componentWillMount');
-    this._getPlayers()
-    */
-  }
-
   componentDidMount() {
     console.log('componentDidMount');
     this._getPlayers()
-  }
-
-  componentWillUnmount() {
-      BackHandler.removeEventListener('hardwareBackPress', this._goBack.bind(this));
   }
 
   render () {
@@ -183,12 +170,19 @@ class Players extends Component {
                 </View>
               </View>
               <View style={{marginTop:25}}>
-                <Button
-                  onPress={this._savePlayers.bind(this)}>
-                  <Text style={[styles.update_button,
-                                this.state.updateButtonActive? styles.buttonActive: styles.buttonInActive
-                              ]}>UPDATE</Text>
-                </Button>
+                {this.state.updateButtonActive?
+                  <Button
+                    onPress={this._savePlayers.bind(this)}>
+                    <Text style={[styles.update_button,styles.buttonActive
+                                ]}>UPDATE</Text>
+                  </Button>
+                  :
+                  <Button
+                    onPress={this._cancel.bind(this)}>
+                    <Text style={[styles.update_button,styles.buttonInActive
+                                ]}>CANCEL</Text>
+                  </Button>
+                }
               </View>
             </View>
           </View>

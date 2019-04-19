@@ -55,7 +55,7 @@ _numFreeSlots = function(slots) {
 
 _get_tee_time = function(response, time) {
   const splitted = response.split("\n")
-  let index = get_index(splitted, time)
+  let index = get_index(splitted, `${time}</td>`)
   let freeSlots = [false, false, false, false]
   if (index >= 0) {
     console.log(`tee-time ${time} found`);

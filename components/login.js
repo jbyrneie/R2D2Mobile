@@ -82,7 +82,7 @@ class Login extends Component {
             <Image
               style={{height:220, width: 341}}
               resizeMode='center'
-              source={require('../images/r2d2.png')}
+              source={require('./images/r2d2.png')}
             />
           </View>
           <Text style={styles.register_body}>
